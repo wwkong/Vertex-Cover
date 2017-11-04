@@ -1,0 +1,64 @@
+/*
+CSE6140 HW1
+*/
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <cstring>
+#include <sstream>
+#include "stdlib.h"
+#include "graph.hpp"
+
+using namespace std;
+
+// parseGraph :: String -> Graph
+// Takes an input .gr file and outputs a Graph pointer
+Graph parseGraph(string graphFile) {
+
+  // Initialize
+  ifstream fHook;
+  Graph initGraph;
+  // Parse and open the .gr file
+  fHook.open(graphFile.c_str());
+  if (fHook.is_open()) {
+
+    // Initialize the graph
+    string input, elem;
+    int E, V, dirFlag;
+    getline(fHook, input);
+    istringstream(input) >> V >> E >> dirFlag;
+    initGraph = Graph(V,E);
+
+    // Add edges
+    int eNum = 0;
+    int vNum = 1;
+    while(getline(fHook,input)) {
+      istringstream ss(input);
+      while(getline(ss, elem, ' ')) {
+        initGraph.addEdge(vNum, atoi(elem.c_str()));
+      }
+      eNum++;
+      vNum++;
+      try {
+        if (eNum > E) {
+          throw out_of_range("EXCEPTION: more edges in input file than specified!");
+        }
+      } catch (const out_of_range &oor){
+        cerr << oor.what() << endl;
+        exit(1);
+      }
+    }
+    fHook.close();
+  }
+  return(initGraph);
+}
+
+// --- Simple tests ---
+int main () {
+  Graph g = parseGraph("../input/karate.graph");
+  // Simple printing
+  g.printAdjancencyList();
+  vector < vector<int> > adjLst = g.getAdjancencyList();
+  cout << "Adjacency List Size=" << adjLst.size() << ", sizeV=" << g.sizeV << ", sizeE=" << g.sizeE << endl;
+  return 1;
+}
