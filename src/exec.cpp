@@ -1,20 +1,21 @@
-/* Main executable */
+/* CSE6140 Project - Main executable */
 
 #include <cstring>
 #include <string>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstdlib>
 #include <getopt.h>
-#include "graph.hpp"
+#include <math.h>
+#include "global.hpp"
 using namespace std;
 
 int main (int argc, char **argv) {
 
   // -----------------------------
-  // Parse Inputs
+  // Parse Options
   // -----------------------------
-
   string fileName;
   string algName;
   double cutoff;
@@ -86,6 +87,9 @@ int main (int argc, char **argv) {
   // -----------------------------
   // Algorithms
   // -----------------------------
+  int finalQuality = 0;
+  timespec startTime, endTime;
+  clock_gettime(CLOCK_REALTIME, &startTime);
   if (strcmp(algName.c_str(),"BnB") == 0) {
     // Do something
   } else if (strcmp(algName.c_str(),"Approx") == 0) {
@@ -98,5 +102,26 @@ int main (int argc, char **argv) {
     fprintf (stderr, "Algorithm %s is invalid! You must choose one of [BNB|Approx|LS1|LS2]. \n", optarg);
     return 1;
   }
+  clock_gettime(CLOCK_REALTIME, &endTime);
+  double sStart = startTime.tv_sec*1000.0;
+  double sEnd = endTime.tv_sec*1000.0;
+  double totalTime = 1000*((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0));
+  // Note: totalTime is in seconds
+
+  // Output some diagnostics
+  string outFileName;
+  ofstream output;
+  unsigned first = fileName.find_last_of("/");
+  unsigned last = fileName.find(".graph");
+  string instName = fileName.substr (first+1,last-first-1);
+  ostringstream tmp1, tmp2;
+  tmp1 << floor(cutoff);
+  tmp2 << seed;
+  outFileName = instName+"_"+"algName"+"_"+tmp1.str()+"_"+tmp2.str()+".last";
+  cout << outFileName << endl;
+  output.open(outFileName.c_str());
+  output << totalTime << " " << finalQuality << endl;
+  output.close();
+
 
 }

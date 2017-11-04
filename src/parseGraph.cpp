@@ -1,5 +1,5 @@
 /*
-CSE6140 HW1
+CSE6140 Project - Input parser
 */
 #include <iostream>
 #include <string>
@@ -53,12 +53,12 @@ Graph parseGraph(string graphFile) {
   return(initGraph);
 }
 
-// --- Simple tests ---
-int main () {
-  Graph g = parseGraph("../input/karate.graph");
-  // Simple printing
-  g.printAdjancencyList();
-  vector < vector<int> > adjLst = g.getAdjancencyList();
-  cout << "Adjacency List Size=" << adjLst.size() << ", sizeV=" << g.sizeV << ", sizeE=" << g.sizeE << endl;
-  return 1;
-}
+// // --- Simple tests ---
+// int main () {
+//   Graph g = parseGraph("../input/karate.graph");
+//   // Simple printing
+//   g.printAdjancencyList();
+//   vector < vector<int> > adjLst = g.getAdjancencyList();
+//   cout << "Adjacency List Size=" << adjLst.size() << ", sizeV=" << g.sizeV << ", sizeE=" << g.sizeE << endl;
+//   return 1;
+// }
