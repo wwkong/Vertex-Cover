@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <getopt.h>
 #include <math.h>
+#include <iomanip> // setprecision
 #include "global.hpp"
 using namespace std;
 
@@ -45,14 +46,16 @@ int main (int argc, char **argv) {
         {
           // Main flags
         case 0:
+          cout << "No options detected!" << endl;
           break;
         case 'i':
-          // printf("option -inst with input %s \n", optarg);
           fileName = optarg;
           break;
         case 'a':
-          // printf("option -alg with input %s \n", optarg);
-          if (! (strcmp(optarg,"BnB") == 0 || strcmp(optarg,"Approx") == 0 || strcmp(optarg,"LS1") == 0 || strcmp(optarg,"LS2") == 0)) {
+          if (! (strcmp(optarg,"BnB")    == 0 ||
+                 strcmp(optarg,"Approx") == 0 ||
+                 strcmp(optarg,"LS1")    == 0 ||
+                 strcmp(optarg,"LS2")    == 0)) {
             fprintf (stderr, "Algorithm %s is invalid! You must choose one of [BNB|Approx|LS1|LS2]. \n", optarg);
             return 1;
           }
@@ -60,11 +63,9 @@ int main (int argc, char **argv) {
             algName = string(optarg);
           break;
         case 't':
-          // printf("option -time with input %s \n", optarg);
           cutoff = atof(optarg);
           break;
         case 's':
-          // printf("option -seed with input %s \n", optarg);
           seed = atoi(optarg);
           break;
           // Unknown inputs
@@ -80,9 +81,9 @@ int main (int argc, char **argv) {
           fileName.c_str(), algName.c_str(), cutoff, seed);
 
   // -----------------------------
-  // Parsing the inputs
+  // Parse the inputs
   // -----------------------------
-  // Graph g = parseInput(fileName);
+  Graph g = parseGraph(fileName);
 
   // -----------------------------
   // Algorithms
@@ -105,23 +106,23 @@ int main (int argc, char **argv) {
   clock_gettime(CLOCK_REALTIME, &endTime);
   double sStart = startTime.tv_sec*1000.0;
   double sEnd = endTime.tv_sec*1000.0;
-  double totalTime = 1000*((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0));
+  double totalTime = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   // Note: totalTime is in seconds
 
-  // Output some diagnostics
+  // Output some finalized diagnostics
   string outFileName;
   ofstream output;
   unsigned first = fileName.find_last_of("/");
   unsigned last = fileName.find(".graph");
   string instName = fileName.substr (first+1,last-first-1);
   ostringstream tmp1, tmp2;
+  // Main streams
   tmp1 << floor(cutoff);
   tmp2 << seed;
   outFileName = instName+"_"+"algName"+"_"+tmp1.str()+"_"+tmp2.str()+".last";
-  cout << outFileName << endl;
+  cout << "Outputting diagnostics to: "<< outFileName << endl;
   output.open(outFileName.c_str());
-  output << totalTime << " " << finalQuality << endl;
+  output << fixed << setprecision(6) << totalTime << " " << finalQuality << endl;
   output.close();
-
 
 }

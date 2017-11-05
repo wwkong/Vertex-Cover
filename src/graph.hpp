@@ -26,9 +26,11 @@ public:
   void addEdge(int, int);
   void addEdges(int, vector<int>);
   // Get
-  vector< vector<int> > getAdjancencyList();
+  vector< vector<int> > getAdjacencyList();
+  vector<int> getAdjacent(int);
   // Utility
-  void printAdjancencyList();
+  void printAdjacencyList();
+  void printAdjacent(int);
 };
 
 // Constructors
@@ -62,12 +64,15 @@ void Graph::addEdges(int start, vector<int> ends) {
 }
 
 // Get
-vector< vector<int> > Graph::getAdjancencyList() {
+vector< vector<int> > Graph::getAdjacencyList() {
   return adjacencyList;
+};
+vector<int> Graph::getAdjacent(int start) {
+  return adjacencyList[start];
 };
 
 // Utility
-void Graph::printAdjancencyList() {
+void Graph::printAdjacencyList() {
   for (int i=1; i < adjacencyList.size(); i++) {
     cout << i << " -> ";
     for (int j=0; j < adjacencyList[i].size(); j++) {
@@ -76,5 +81,12 @@ void Graph::printAdjancencyList() {
     cout << endl;
   }
 }
-
+void Graph::printAdjacent(int start) {
+  vector<int> adjNodes = getAdjacent(start);
+  cout << start << " -> ";
+  for (int j=0; j < adjNodes.size(); j++) {
+    cout << adjNodes[j] << " ";
+  }
+  cout << endl;
+}
 #endif

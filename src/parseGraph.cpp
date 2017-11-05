@@ -57,8 +57,11 @@ Graph parseGraph(string graphFile) {
 // int main () {
 //   Graph g = parseGraph("../input/karate.graph");
 //   // Simple printing
-//   g.printAdjancencyList();
-//   vector < vector<int> > adjLst = g.getAdjancencyList();
+//   g.printAdjacencyList();
+//   vector < vector<int> > adjLst = g.getAdjacencyList();
 //   cout << "Adjacency List Size=" << adjLst.size() << ", sizeV=" << g.sizeV << ", sizeE=" << g.sizeE << endl;
+//   cout << "Neighbours of 1 => ";
+//   g.printAdjacent(1);
+//   cout << endl;
 //   return 1;
 // }
