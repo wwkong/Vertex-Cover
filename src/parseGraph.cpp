@@ -1,6 +1,4 @@
-/*
-CSE6140 Project - Input parser
-*/
+/* CSE6140 Project - Input parser */
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -53,18 +51,23 @@ Graph parseGraph(string graphFile) {
   return(initGraph);
 }
 
-// --- Simple tests ---
-int main () {
-  Graph g = parseGraph("../input/karate.graph");
-  // Simple printing
-  g.printAdjacencyList();
-  vector < vector<int> > adjLst = g.getAdjacencyList();
-  cout << "Adjacency List Size=" << adjLst.size() << ", sizeV=" << g.sizeV << ", sizeE=" << g.sizeE << endl;
-  cout << "Neighbours of 1 => ";
-  g.printAdjacent(1);
-  cout << endl;
-  cout << "Removing Vertex 1..." << endl;
-  g.rmVertex(1);
-  g.printAdjacencyList();
-  return 1;
-}
+// // --- Simple tests ---
+// int main () {
+//   Graph g = parseGraph("../input/karate.graph");
+//   // Simple printing
+//   g.printAdjacencyList();
+//   vector < vector<int> > adjLst = g.getAdjacencyList();
+//   cout << "Adjacency List Size=" << adjLst.size() << ", sizeV=" << g.sizeV << ", sizeE=" << g.sizeE << endl;
+//   cout << "Neighbours of 1 => ";
+//   g.printAdjacent(1);
+//   cout << endl;
+//   cout << "Removing Vertex 1..." << endl;
+//   g.rmVertex(1);
+//   g.printAdjacencyList();
+//   vector<Edge> eSet = g.getEdges();
+//   for (int k=0; k<eSet.size(); k++) {
+//     eSet[k].print();
+//   }
+//   cout << "nEdges = " << g.sizeE << ", nESet=" << eSet.size() << endl;
+//   return 1;
+// }
