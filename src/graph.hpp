@@ -42,6 +42,7 @@ public:
   vector< vector<int> > getAdjacencyList();
   vector<int> getAdjacent(int);
   vector<Edge> getEdges();
+  vector<int> getVertices();
   // Utility
   void printAdjacencyList();
   void printAdjacent(int);
@@ -129,6 +130,22 @@ vector<Edge> Graph::getEdges() {
   }
   return eSet;
 }
+vector<int> Graph::getVertices() {
+  int v;
+  vector<int> vSet;
+  vector<bool> vCheck(sizeV+1,false);
+  for(int i=0; i<adjacencyList.size(); i++) {
+    for (int j=0; j<adjacencyList[i].size(); j++) {
+      v = adjacencyList[i][j];
+      if (!vCheck[v]) {
+        vCheck[v] = true;
+        vSet.push_back(v);
+      }
+    }
+  }
+  return vSet;
+}
+
 
 // Utility
 void Edge::print() {
