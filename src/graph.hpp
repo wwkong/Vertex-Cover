@@ -102,6 +102,7 @@ void Graph::addEdges(vector<Edge> es) {
 void Graph::rmVertex(int vertex) {
   vector<int> neighbours = adjacencyList[vertex];
   sizeE -= adjacencyList[vertex].size()-1;
+  sizeV -= 1;
   adjacencyList[vertex].clear();
   for (int i = 0; i<neighbours.size(); i++) {
     for (int j = 0; j<adjacencyList[i].size(); j++) {

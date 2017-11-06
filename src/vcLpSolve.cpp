@@ -3,7 +3,15 @@
 /* Chosen method is Gurobi */
 #include <stdio.h>
 #include "gurobi_c++.h"
+#include "graph.hpp"
 using namespace std;
+
+// Given a graph G, solve the LP relaxation of the Vertex Cover problem
+GRBModel solveVC(Graph G) {
+  // Grab the needed info
+  int sizeV = G.size;
+  vector<Edge> edges = G.getEdges();
+}
 
 int
 main(int   argc,
