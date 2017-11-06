@@ -14,6 +14,15 @@ using namespace std;
 /* =============================== */
 
 // We will assume 1-Indexing
+class Edge {
+public:
+  int start, end;
+  // Constructors
+  Edge();
+  Edge(int, int);
+  // Utility
+  void print();
+};
 class Graph {
   vector< vector<int> > adjacencyList;
 public:
@@ -25,17 +34,28 @@ public:
   Graph(int,int);
   // Set
   void addEdge(int, int);
+  void addEdge(Edge);
   void addEdges(int, vector<int>);
+  void addEdges(vector<Edge>);
   void rmVertex(int);
   // Get
   vector< vector<int> > getAdjacencyList();
   vector<int> getAdjacent(int);
+  vector<Edge> getEdges();
   // Utility
   void printAdjacencyList();
   void printAdjacent(int);
 };
 
 // Constructors
+Edge::Edge() {
+  start = 0;
+  end = 0;
+}
+Edge::Edge(int s, int t) {
+  start = s;
+  end = t;
+}
 Graph::Graph() {
   sizeV = 0;
   sizeE = 0;
@@ -69,8 +89,19 @@ void Graph::addEdges(int start, vector<int> ends) {
     addEdge(start, ends[i]);
   }
 }
+void Graph::addEdge(Edge e) {
+  adjacencyList[e.start].push_back(e.end);
+}
+void Graph::addEdges(vector<Edge> es) {
+  sizeE += es.size();
+  for(int i=0; i<es.size(); i++) {
+    addEdge(es[i].start, es[i].end);
+  }
+}
+
 void Graph::rmVertex(int vertex) {
   vector<int> neighbours = adjacencyList[vertex];
+  sizeE -= adjacencyList[vertex].size()-1;
   adjacencyList[vertex].clear();
   for (int i = 0; i<neighbours.size(); i++) {
     for (int j = 0; j<adjacencyList[i].size(); j++) {
@@ -87,8 +118,21 @@ vector< vector<int> > Graph::getAdjacencyList() {
 vector<int> Graph::getAdjacent(int start) {
   return adjacencyList[start];
 };
+vector<Edge> Graph::getEdges() {
+  vector<Edge> eSet;
+  for(int i=0; i<adjacencyList.size(); i++) {
+    for (int j=0; j<adjacencyList[i].size(); j++) {
+      if (i<adjacencyList[i][j])
+        eSet.push_back(Edge(i,adjacencyList[i][j]));
+    }
+  }
+  return eSet;
+}
 
 // Utility
+void Edge::print() {
+  cout << "start=" << start << ", end="<< end << endl;;
+}
 void Graph::printAdjacencyList() {
   for (int i=1; i<adjacencyList.size(); i++) {
     cout << i << " -> ";
