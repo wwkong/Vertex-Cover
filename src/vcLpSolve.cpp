@@ -2,6 +2,7 @@
 
 /* Chosen method is Gurobi */
 #include <stdio.h>
+#include <sstream>
 #include "gurobi_c++.h"
 #include "graph.hpp"
 using namespace std;
@@ -9,8 +10,49 @@ using namespace std;
 // Given a graph G, solve the LP relaxation of the Vertex Cover problem
 GRBModel solveVC(Graph G) {
   // Grab the needed info
-  int sizeV = G.size;
+  int sizeV = G.sizeV;
+  int sizeE = G.sizeE;
   vector<Edge> edges = G.getEdges();
+  // Set up the model variables
+  stringstream vName, sName, tName;
+  vector<double> costs(sizeV,1.0);
+  vector<string> varNames(sizeV);
+  for (int i=1; i<=varNames.size(); i++) {
+    vName << i;
+    varNames[i] = "v" + vName.str();
+    vName.str(string());
+    vName.clear();
+  }
+  GRBEnv env = GRBEnv();
+  GRBModel model = GRBModel(env);
+  try {
+    model.set(GRB_IntAttr_ModelSense, GRB_MINIMIZE);
+    GRBVar *vars = model.addVars(NULL, NULL, &costs[0], "GRB_CONTINUOUS", &varNames[0], sizeV);
+    // Add constraints
+    int s, t;
+    for (int j=0; j<edges.size(); j++) {
+      s = edges[j].start;
+      t = edges[j].end;
+      sName << s;
+      tName << t;
+      model.addConstr(vars[s-1] + vars[t-1] <= 1, "e_"+sName.str()+"_"+tName.str());
+      sName.str(string());
+      sName.clear();
+      tName.str(string());
+      tName.clear();
+    }
+    // Optimize, print, and return
+    model.optimize();
+    printSolution(model, nCategories, nFoods, buy, nutrition);
+  }
+  // Catch errors
+    catch(GRBException e) {
+    cout << "Error code = " << e.getErrorCode() << endl;
+    cout << e.getMessage() << endl;
+  } catch(...) {
+    cout << "Exception during optimization" << endl;
+  }
+  return model;
 }
 
 int
