@@ -147,7 +147,6 @@ vector<int> Graph::getVertices() {
   return vSet;
 }
 
-
 // Utility
 void Edge::print() {
   cout << "start=" << start << ", end="<< end << endl;;
