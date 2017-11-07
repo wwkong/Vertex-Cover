@@ -3,47 +3,64 @@
 /* Chosen method is Gurobi */
 #include <stdio.h>
 #include <sstream>
+#include <math.h>
+#include <unistd.h>
 #include "gurobi_c++.h"
-#include "graph.hpp"
+#include "global.hpp"
 using namespace std;
 
 // Given a graph G, solve the LP relaxation of the Vertex Cover problem
-GRBModel solveVC(Graph G) {
+GRBModel vcLpSolve(Graph G, bool printFlag) {
   // Grab the needed info
-  int sizeV = G.sizeV;
-  int sizeE = G.sizeE;
   vector<Edge> edges = G.getEdges();
+  vector<int> vertices = G.getVertices();
+  int sizeE = edges.size();
+  int sizeV = vertices.size();
   // Set up the model variables
   stringstream vName, sName, tName;
   vector<double> costs(sizeV,1.0);
   vector<string> varNames(sizeV);
-  for (int i=1; i<=varNames.size(); i++) {
-    vName << i;
+  vector<char> types(sizeV);
+  for (int i=0; i<sizeV; i++) {
+    vName << vertices[i];
     varNames[i] = "v" + vName.str();
+    types[i] = GRB_CONTINUOUS;
     vName.str(string());
     vName.clear();
   }
-  GRBEnv env = GRBEnv();
-  GRBModel model = GRBModel(env);
+  // Supress stdout
+  int o = dup(fileno(stdout));
+  freopen ("/dev/null", "w", stdout);
+  GRBEnv *env = new GRBEnv();
+  dup2(o,fileno(stdout));
+  close(o);
+  // Re-open stdout
+  GRBModel model = GRBModel(*env);
   try {
     model.set(GRB_IntAttr_ModelSense, GRB_MINIMIZE);
-    GRBVar *vars = model.addVars(NULL, NULL, &costs[0], "GRB_CONTINUOUS", &varNames[0], sizeV);
+    GRBVar *vars = model.addVars(NULL, NULL, &costs[0], &types[0], &varNames[0], sizeV);
+    model.update();
     // Add constraints
     int s, t;
+    GRBVar sVar, tVar;
     for (int j=0; j<edges.size(); j++) {
-      s = edges[j].start;
-      t = edges[j].end;
+      s = min(edges[j].start, edges[j].end);
+      t = max(edges[j].start, edges[j].end);
       sName << s;
       tName << t;
-      model.addConstr(vars[s-1] + vars[t-1] <= 1, "e_"+sName.str()+"_"+tName.str());
+      sVar = model.getVarByName("v"+sName.str());
+      tVar = model.getVarByName("v"+tName.str());
+      model.addConstr(sVar + tVar >= 1, "e_"+sName.str()+"_"+tName.str());
       sName.str(string());
       sName.clear();
       tName.str(string());
       tName.clear();
     }
     // Optimize, print, and return
+    model.getEnv().set(GRB_IntParam_OutputFlag, printFlag);
+    model.update();
     model.optimize();
-    printSolution(model, nCategories, nFoods, buy, nutrition);
+    return model;
   }
   // Catch errors
     catch(GRBException e) {
@@ -52,55 +69,14 @@ GRBModel solveVC(Graph G) {
   } catch(...) {
     cout << "Exception during optimization" << endl;
   }
+  delete env;
   return model;
 }
 
-int
-main(int   argc,
-     char *argv[])
-{
-  try {
-    GRBEnv env = GRBEnv();
-
-    GRBModel model = GRBModel(env);
-
-    // Create variables
-
-    GRBVar x = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "x");
-    GRBVar y = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "y");
-    GRBVar z = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "z");
-
-    // Set objective: maximize x + y + 2 z
-
-    model.setObjective(x + y + 2 * z, GRB_MAXIMIZE);
-
-    // Add constraint: x + 2 y + 3 z <= 4
-
-    model.addConstr(x + 2 * y + 3 * z <= 4, "c0");
-
-    // Add constraint: x + y >= 1
-
-    model.addConstr(x + y >= 1, "c1");
-
-    // Optimize model
-
-    model.optimize();
-
-    cout << x.get(GRB_StringAttr_VarName) << " "
-         << x.get(GRB_DoubleAttr_X) << endl;
-    cout << y.get(GRB_StringAttr_VarName) << " "
-         << y.get(GRB_DoubleAttr_X) << endl;
-    cout << z.get(GRB_StringAttr_VarName) << " "
-         << z.get(GRB_DoubleAttr_X) << endl;
-
-    cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
-
-  } catch(GRBException e) {
-    cout << "Error code = " << e.getErrorCode() << endl;
-    cout << e.getMessage() << endl;
-  } catch(...) {
-    cout << "Exception during optimization" << endl;
-  }
-
-  return 0;
-}
+// // Simple tests
+// int main(int argc, char *argv[]) {
+//   Graph g = parseGraph("../input/jazz.graph");
+//   GRBModel vcModel = vcLpSolve(g, false);
+//   cout << "ObjVal: " << vcModel.get(GRB_DoubleAttr_ObjVal) << endl;
+//   return 0;
+// }

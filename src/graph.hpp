@@ -1,13 +1,13 @@
 /* CSE6140 Project - Simple Graph Classes */
 
+#ifndef GRAPH_H
+#define GRAPH_H
+
 #include <algorithm> // remove(vector)
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
 using namespace std;
-
-#ifndef GRAPH_H
-#define GRAPH_H
 
 /* =============================== */
 /* --- Simple graph structures --- */
@@ -168,4 +168,5 @@ void Graph::printAdjacent(int start) {
   }
   cout << endl;
 }
+
 #endif
