@@ -17,7 +17,6 @@ public:
   Graph G;
   int incumbentValue;
   vector<int> candidates;
-  vector<bool> vertexCheck;
   vector<int> vertexSet;
   vector<int> solution;
   vector< vector<double> > history;
@@ -52,234 +51,217 @@ bool cmpSize(vector<int> a, vector<int> b) {
 // branchAndBoundIter :: BnBInfo -> GRBModel -> Double -> BnBInfo
 BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff) {
 
-  // Check our runtime
-  if (B.time >= 60*cutoff) {
-    return B;
-  }
-
-  // Helper variables
-  int nVars, nConstrs;
-  vector<int> VBases;
-  vector<int> CBases;
-  stringstream vName;
-  BnBInfo BVIn, BVOut, BLeft, BRight, BFinal, BInter;
-  time_t startTimer, timer1, timer2, timer3, timer4;
-  double diffSec;
-  time(&startTimer);
-
-  // Update the info
-  int vSplit = B.candidates[0];
-  B.candidates.erase(B.candidates.begin());
-  vName << "v" << vSplit;
-
-  // ===================================
-  // Include the candidate vertex (LEFT)
-  // ===================================
-
-  // Copy and update BnBInfo and check if solution is better than the incumbent
-  BVIn = B;
-  vector<int> adjV = B.G.getAdjacent(vSplit);
-  BVIn.vertexSet.push_back(vSplit);
-  BVIn.vertexCheck[vSplit] = true;
-  for (int i=0; i<adjV.size(); i++) {
-    BVIn.vertexCheck[adjV[i]] = true;
-  }
-  // *** FATHOM *** via optimality or bounding
-  if (find(BVIn.vertexCheck.begin(),
-           BVIn.vertexCheck.end()  , false) == BVIn.vertexCheck.end()) {
-    cout << "Fathom due to optimality or bounding!" << endl;
-    if (BVIn.vertexSet.size() < BVIn.incumbentValue) {
-      BVIn.solution = BVIn.vertexSet;
-      BVIn.incumbentValue = BVIn.solution.size();
-      cout << "Fathom due to OPTIMALITY!" << endl;
-    }
-    return BVIn;
-  }
-  // *** FATHOM *** via infeasibility
-  if (BVIn.candidates.empty()) {
-    cout << "Fathom due to infeasibility!" << endl;
-    cin.get();
-    return BVIn;
-  }
-
-  // When we still need to search potential solutions and have a solution, start LP building
-  GRBModel MIn  = M;
-  if(B.solution.size() > 0) {
-
-    // Grab the basis info
-    nVars = M.get(GRB_IntAttr_NumVars);
-    nConstrs = M.get(GRB_IntAttr_NumConstrs);
-    vector<int> VBases (nVars);
-    vector<int> CBases (nConstrs);
-    M.optimize();
-    GRBConstr* MConstrs = M.getConstrs();
-    GRBVar* MVars = M.getVars();
-    for (int i=0; i<nVars; i++) {
-      VBases[i] = MVars[i].get(GRB_IntAttr_VBasis);
-    }
-    for (int i=0; i<nConstrs; i++) {
-      CBases[i] = MConstrs[i].get(GRB_IntAttr_CBasis);
+    // Check our runtime
+    if (B.time >= 60*cutoff) {
+      return B;
     }
 
-    // <--- Start New Gurobi Model ---> 
-    MIn.addConstr(MIn.getVarByName(vName.str()) == 1);
-    // MIn.getEnv().set(GRB_IntParam_OutputFlag, true);
-    MIn.update();
-    int nVarsIn = MIn.get(GRB_IntAttr_NumVars);
-    int nConstrsIn = MIn.get(GRB_IntAttr_NumConstrs);
-    GRBConstr* MInConstrs = MIn.getConstrs();
-    GRBVar* MInVars = MIn.getVars();
-    for (int i=0; i<nVarsIn; i++) {
-      if (i<nVars) {
-        MInVars[i].set(GRB_IntAttr_VBasis, VBases[i]);
-      } else {
-        MInVars[i].set(GRB_IntAttr_VBasis, 0);
+    // *** FATHOM *** via infeasibility
+    if (B.candidates.empty()) {
+      cout << "Fathom due to infeasibility!" << endl;
+      return B;
+    }
+
+    // Helper variables
+    int nVars, nConstrs;
+    vector<int> VBases;
+    vector<int> CBases;
+    stringstream vName;
+    BnBInfo BVIn, BVOut, BLeft, BRight, BFinal;
+    time_t startTimer, timer1, timer2, timer3, timer4;
+    double diffSec;
+    time(&startTimer);
+
+    // Update the info
+    int vSplit = B.candidates[0];
+    vName << "v" << vSplit;
+
+    // ===================================
+    // Include the candidate vertex (LEFT)
+    // ===================================
+
+    // Copy and update BnBInfo and check if solution is better than the incumbent
+    BVIn = B;
+    vector<int> adjV = B.G.getAdjacent(vSplit);
+    BVIn.vertexSet.push_back(vSplit);
+    // *** FATHOM *** via optimality or bounding
+    if (BVIn.G.isVC(BVIn.vertexSet)) {
+      cout << "VIn -> Fathom due to optimality or bounding!" << endl;
+      if (BVIn.vertexSet.size() < BVIn.incumbentValue) {
+        BVIn.solution = BVIn.vertexSet;
+        BVIn.incumbentValue = BVIn.solution.size();
+        cout << "VIn -> Fathom due to OPTIMALITY!" << endl;
       }
-    }
-    for (int i=0; i<nConstrsIn; i++) {
-      if (i<nConstrs) {
-        MInConstrs[i].set(GRB_IntAttr_CBasis, CBases[i]);
-      } else {
-        MInConstrs[i].set(GRB_IntAttr_CBasis, 0);
-      }
-    }
-    MIn.optimize();
-    // <--- End New Gurobi Model --->
-
-    // *** FATHOM *** via bounding
-    cout << "LEFT -> LP fathom due to bounding!" << endl;
-    if (MIn.get(GRB_DoubleAttr_ObjVal) > BVIn.incumbentValue) {
       return BVIn;
     }
-  }
 
-  // Check our runtime
-  time(&timer1);
-  diffSec = difftime(timer1, startTimer);
-  BVIn.time += diffSec;
-  if (BVIn.time >= cutoff*60) {
-    BVIn.time = cutoff*60;
-    return BVIn;
-  }
+    // When we still need to search potential solutions and have a solution, start LP building
+    GRBModel MIn  = M;
+    if(B.solution.size() > 0) {
+      // Grab the basis info
+      nVars = M.get(GRB_IntAttr_NumVars);
+      nConstrs = M.get(GRB_IntAttr_NumConstrs);
+      vector<int> VBases (nVars);
+      vector<int> CBases (nConstrs);
+      M.optimize();
+      GRBConstr* MConstrs = M.getConstrs();
+      GRBVar* MVars = M.getVars();
+      for (int i=0; i<nVars; i++) {
+        VBases[i] = MVars[i].get(GRB_IntAttr_VBasis);
+      }
+      for (int i=0; i<nConstrs; i++) {
+        CBases[i] = MConstrs[i].get(GRB_IntAttr_CBasis);
+      }
 
-  // Last resort -> we MUST branch
-  BVIn.printCandidates();
-  BVIn.printVertexSet();
-  cout << "IncumbentValue=" << BVIn.incumbentValue << "... Branching LEFT..." << endl;
-  BLeft  = branchAndBoundIter(BVIn,  MIn,  cutoff);
-  // Check our runtime (again)
+      // <--- Start New Gurobi Model ---> 
+      MIn.addConstr(MIn.getVarByName(vName.str()) == 1);
+      // MIn.getEnv().set(GRB_IntParam_OutputFlag, true);
+      MIn.update();
+      int nVarsIn = MIn.get(GRB_IntAttr_NumVars);
+      int nConstrsIn = MIn.get(GRB_IntAttr_NumConstrs);
+      GRBConstr* MInConstrs = MIn.getConstrs();
+      GRBVar* MInVars = MIn.getVars();
+      for (int i=0; i<nVarsIn; i++) {
+        if (i<nVars) {
+          MInVars[i].set(GRB_IntAttr_VBasis, VBases[i]);
+        } else {
+          MInVars[i].set(GRB_IntAttr_VBasis, 0);
+        }
+      }
+      for (int i=0; i<nConstrsIn; i++) {
+        if (i<nConstrs) {
+          MInConstrs[i].set(GRB_IntAttr_CBasis, CBases[i]);
+        } else {
+          MInConstrs[i].set(GRB_IntAttr_CBasis, 0);
+        }
+      }
+      MIn.optimize();
+      cout << "LEFT LP Status: " << MIn.get(GRB_IntAttr_Status) << endl;
+      // <--- End New Gurobi Model --->
 
-  time(&timer2);
-  diffSec = difftime(timer2, timer1);
-  BLeft.time += diffSec;
-  if (BLeft.time >= cutoff*60) {
-    BLeft.time = cutoff*60;
-    return BLeft;
-  }
-  // ====================================
-  // Combine LEFT and OLD solutions
-  // ====================================
-  if (BLeft.incumbentValue < B.incumbentValue) {
-    BInter = BLeft;
-  } else {
-    BInter = B;
-  }
-
-  // ====================================
-  // Exclude the candidate vertex (RIGHT)
-  // ====================================
-
-  // Copy BnBInfo
-  BVOut = BInter;
-  // *** FATHOM *** via infeasibility
-  if (BVOut.candidates.empty()) {
-    cout << "Fathom due to infeasibility!" << endl;
-    return BVOut;
-  }
-  // When we still need to search potential solutions and have a solution, start LP building
-  GRBModel MOut  = M;
-  if(BInter.solution.size() > 0) {
-
-    // Grab the basis info
-    nVars = M.get(GRB_IntAttr_NumVars);
-    nConstrs = M.get(GRB_IntAttr_NumConstrs);
-    vector<int> VBases (nVars);
-    vector<int> CBases (nConstrs);
-    M.optimize();
-    GRBConstr* MConstrs = M.getConstrs();
-    GRBVar* MVars = M.getVars();
-    for (int i=0; i<nVars; i++) {
-      VBases[i] = MVars[i].get(GRB_IntAttr_VBasis);
+      // *** FATHOM *** via bounding
+      if (MIn.get(GRB_DoubleAttr_ObjVal) >= BVIn.incumbentValue) {
+        cout << "LEFT -> LP fathom due to bounding!" << endl;
+        return BVIn;
+      }
     }
-    for (int i=0; i<nConstrs; i++) {
-      CBases[i] = MConstrs[i].get(GRB_IntAttr_CBasis);
+
+    // Check our runtime
+    time(&timer1);
+    diffSec = difftime(timer1, startTimer);
+    BVIn.time += diffSec;
+    if (BVIn.time >= cutoff*60) {
+      BVIn.time = cutoff*60;
+      return BVIn;
     }
+
+    // Last resort -> we MUST branch
+    BVIn.printCandidates();
+    BVIn.printVertexSet();
+    cout << "IncumbentValue=" << BVIn.incumbentValue << "... Branching LEFT..." << endl;
+    try {
+      BVIn.candidates.erase(BVIn.candidates.begin());
+      BLeft  = branchAndBoundIter(BVIn,  MIn,  cutoff);
+    }
+    // Catch errors
+    catch(GRBException e) {
+      cout << "Error code = " << e.getErrorCode() << endl;
+      cout << e.getMessage() << endl;
+    } catch(...) {
+      cout << "Exception during optimization" << endl;
+    }
+
+    // Check our runtime (again)
+    time(&timer2);
+    diffSec = difftime(timer2, timer1);
+    BLeft.time += diffSec;
+    if (BLeft.time >= cutoff*60) {
+      BLeft.time = cutoff*60;
+      return BLeft;
+    }
+
+    // ====================================
+    // Exclude the candidate vertex (RIGHT)
+    // ====================================
+
+    // Copy BnBInfo
+    BVOut = B;
+    BVOut.incumbentValue = BLeft.incumbentValue;
+    BVOut.solution = BLeft.solution;
+    // When we still need to search potential solutions and have a solution, start LP building
+    GRBModel MOut = M;
+    if(BVOut.solution.size() > 0) {
+
+      // *** Note *** Removed the warm start since the presolver is faster usually
     
-    // <--- Start New Gurobi Model ---> 
-    MOut.addConstr(MOut.getVarByName(vName.str()) == 0);
-    // MOut.getEnv().set(GRB_IntParam_OutputFlag, true);
-    MOut.update();
-    int nVarsOut = MOut.get(GRB_IntAttr_NumVars);
-    int nConstrsOut = MOut.get(GRB_IntAttr_NumConstrs);
-    GRBConstr* MOutConstrs = MOut.getConstrs();
-    GRBVar* MOutVars = MOut.getVars();
-    for (int i=0; i<nVarsOut; i++) {
-      if (i<nVars) {
-        MOutVars[i].set(GRB_IntAttr_VBasis, VBases[i]);
-      } else {
-        MOutVars[i].set(GRB_IntAttr_VBasis, 0);
-      }
-    }
-    for (int i=0; i<nConstrsOut; i++) {
-      if (i<nConstrs) {
-        MOutConstrs[i].set(GRB_IntAttr_CBasis, CBases[i]);
-      } else {
-        MOutConstrs[i].set(GRB_IntAttr_CBasis, 0);
-      }
-    }
-    MOut.optimize();
-    // <--- End New Gurobi Model --->
+      // <--- Start New Gurobi Model ---> 
+      MOut.addConstr(MOut.getVarByName(vName.str()) == 0);
+      // MOut.getEnv().set(GRB_IntParam_OutputFlag, true);
+      MOut.update();
+      MOut.optimize();
+      cout << "RIGHT LP Status: " << MOut.get(GRB_IntAttr_Status) << endl;
+      // <--- End New Gurobi Model --->
 
-    // *** FATHOM *** via bounding
-    cout << "RIGHT -> LP fathom due to bounding!" << endl;
-    if (MOut.get(GRB_DoubleAttr_ObjVal) > BVOut.incumbentValue) { 
+      // *** FATHOM *** via bounding
+      if (MOut.get(GRB_DoubleAttr_ObjVal) >= BVOut.incumbentValue) { 
+        cout << "RIGHT -> LP fathom due to bounding!" << endl;
+        return BVOut;
+      }
+    }
+
+    // Check our runtime
+    time(&timer3);
+    diffSec = difftime(timer3, startTimer);
+    BVOut.time += diffSec;
+    if (BVOut.time >= cutoff*60) {
+      BVOut.time = cutoff*60;
       return BVOut;
     }
-  }
 
-  // Check our runtime
-  time(&timer3);
-  diffSec = difftime(timer3, startTimer);
-  BVOut.time += diffSec;
-  if (BVOut.time >= cutoff*60) {
-    BVOut.time = cutoff*60;
-    return BVOut;
-  }
+    // Last resort -> we MUST branch
+    BVOut.printCandidates();
+    BVOut.printVertexSet();
+    cout << "IncumbentValue=" << BVOut.incumbentValue << "... Branching RIGHT..." << endl;
+    try {
+      BVOut.candidates.erase(BVOut.candidates.begin());
+      BRight = branchAndBoundIter(BVOut, MOut, cutoff);
+    }
+    // Catch errors
+    catch(GRBException e) {
+      cout << "Error code = " << e.getErrorCode() << endl;
+      cout << e.getMessage() << endl;
+    } catch(...) {
+      cout << "Exception during optimization" << endl;
+    }
 
-  // Last resort -> we MUST branch
-  BVOut.printCandidates();
-  BVOut.printVertexSet();
-  cout << "IncumbentValue=" << BVOut.incumbentValue << "... Branching RIGHT..." << endl;
-  BRight = branchAndBoundIter(BVOut, MOut, cutoff);
+    // Check our runtime (again)
+    time(&timer4);
+    diffSec = difftime(timer4, timer3);
+    BRight.time += diffSec;
+    if (BRight.time >= cutoff*60) {
+      BRight.time = cutoff*60;
+      return BRight;
+    }
 
-  // Check our runtime (again)
-  time(&timer4);
-  diffSec = difftime(timer4, timer3);
-  BRight.time += diffSec;
-  if (BRight.time >= cutoff*60) {
-    BRight.time = cutoff*60;
-    return BRight;
-  }
+    // ====================================
+    // Combine INTER and RIGHT solutions
+    // ====================================
+    if (BLeft.incumbentValue < BRight.incumbentValue) {
+      BFinal = BLeft;
+    } else {
+      BFinal = BRight;
+    }
+    return BFinal;
+  // }
+  // Catch errors
+  // catch(GRBException e) {
+  //   cout << "Error code = " << e.getErrorCode() << endl;
+  //   cout << e.getMessage() << endl;
+  // } catch(...) {
+  //   cout << "Exception during optimization" << endl;
+  // }
 
-  // ====================================
-  // Combine INTER and RIGHT solutions
-  // ====================================
-  if (BInter.incumbentValue < BRight.incumbentValue) {
-    BFinal = BInter;
-  } else {
-    BFinal = BRight;
-  }
-  return BFinal;
+  return B;
 }
 
 // Main Branch and Bound function
@@ -296,8 +278,6 @@ void branchAndBound(Graph G, string instName, double cutoff) {
   BInit.time = 0;
   BInit.G = G;
   BInit.incumbentValue = G.sizeV;
-  BInit.vertexCheck = vector<bool> (G.sizeV+1, false);
-  BInit.vertexCheck[0] = true; // Exclude checking the trivial vertex
   BInit.vertexSet = vector<int> ();
   BInit.solution = vector<int> ();
   BInit.history = vector< vector<double> > ();
@@ -311,9 +291,11 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
   // Call the main iterator
   BnBInfo BOut = branchAndBoundIter(BInit, lpInit, cutoff);
+  cout << "|V|=" << G.sizeV << ", |E|=" << G.sizeE << endl;
   cout << "Solution:" << endl;
   BOut.printVertexSet();
   cout << "numVertices = " << BOut.incumbentValue << endl;
+  cout << "isVC = " << G.isVC(BOut.vertexSet) << endl;
 
   // Output info
 
@@ -321,7 +303,7 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
 // Simple tests
 int main() {
-  Graph g = parseGraph("../input/jazz.graph");
-  branchAndBound(g, "karate", 1);
+  Graph g = parseGraph("../input/karate.graph");
+  branchAndBound(g, "", 0.1);
   return 1;
 }
