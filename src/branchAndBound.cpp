@@ -2,6 +2,7 @@
 
 /* Chosen method is Gurobi */
 #include <stdio.h>
+#include <iomanip>  // setprecision
 #include <sstream>
 #include <ctime>
 #include <fstream>
@@ -86,9 +87,11 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
     int nVars, nConstrs;
     vector<int> VBases;
     vector<int> CBases;
-    stringstream ss;
+    stringstream ss, fss;
+    ofstream trace;
+    string traceFName;
     BnBInfo BVIn, BVOut, BLeft, BRight, BFinal;
-    time_t startTimer, timer1, timer2, timer3, timer4;
+    time_t startTimer, timerS, timer1, timer2, timer3, timer4;
     double diffSec, leftLB, rightLB;
     time(&startTimer);
 
@@ -99,13 +102,14 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
     // ===================================
     // Include the candidate vertex (LEFT)
     // ===================================
-
     // Copy and update BnBInfo
     BVIn = B;
     BVIn.vertexSet.push_back(vSplit);
     BVIn.updateEdgeSet();
     // Check optimality (BOTTLENECK)
     if (BVIn.edgeSet.empty() && BVIn.vertexSet.size() < BVIn.solution.size()) {
+
+      // Update and add to the trace log
       BVIn.solution = BVIn.vertexSet;
       if (debug) {
         cout << "Adding vertex " << vSplit << "..." << endl;
@@ -113,10 +117,27 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
         cout << "Solution Size = " << BVIn.solution.size() << endl;
         cout << "Fathom due to OPTIMALITY!" << endl << endl;
       }
+      // Update time
+      time(&timer1);
+      diffSec = difftime(timer1, startTimer);
+      BVIn.time += diffSec;
+      if (BVIn.time >= cutoff*60) {
+        BVIn.time = cutoff*60;
+      }
+      // Output
+      fss << BVIn.instName << "_BnB_" << cutoff;
+      traceFName = fss.str()+".trace";
+      fss.str(string());
+      trace.open(traceFName.c_str(), ios_base::app);
+      trace << fixed << setprecision(2) << BVIn.solution.size() << " " << diffSec + BVIn.time << endl;
+      trace.close();
       return BVIn;
+
     }
 
+    // =====================================
     // -------- Grab a LOWER BOUND ---------
+    // =====================================
     GRBModel MIn  = M;
     if(B.solution.size() > 0) {
       // Grab the basis info
@@ -178,11 +199,12 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
     // ====================================
     // Exclude the candidate vertex (RIGHT)
     // ====================================
-
     // Copy BnBInfo
     BVOut = B;
 
+    // =====================================
     // -------- Grab a LOWER BOUND ---------
+    // =====================================
     GRBModel MOut = M;
     if(BVOut.solution.size() > 0) {
 
@@ -220,7 +242,6 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
     // ====================================
     // Determine branching strategy
     // ====================================
-
     BLeft = B;
     BRight = B;
 
@@ -241,6 +262,7 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
       }
       // Update
       BVOut.solution = BLeft.solution;
+      BVOut.time = BLeft.time;
     } else {
       if (debug) {
         cout << "Failed to add vertex " << vSplit << "..." << endl;
@@ -249,17 +271,13 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
     }
 
     // Check our runtime
-    time(&timer2);
-    diffSec = difftime(timer2, startTimer);
-    BLeft.time += diffSec;
-    BRight.time += diffSec;
     if (BLeft.time >= cutoff*60) {
       BLeft.time = cutoff*60;
       return BLeft;
     }
 
     // RIGHT
-    if (rightLB < B.solution.size()) {
+    if (rightLB < BVOut.solution.size()) {
       if (debug) {
         cout << "Attempting to remove vertex " << vSplit << "..." << endl;
         BVOut.printCandidates();
@@ -276,9 +294,6 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
     }
 
     // Check our runtime
-    time(&timer3);
-    diffSec = difftime(timer3, startTimer);
-    BRight.time += diffSec;
     if (BRight.time >= cutoff*60) {
       BRight.time = cutoff*60;
       return BRight;
@@ -316,7 +331,7 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
 void branchAndBound(Graph G, string instName, double cutoff) {
 
   // Set up main variables
-  ofstream sol;
+  ofstream sol, trace;
   BnBInfo BInit;
   GRBModel lpInit = vcLpSolve(G, false);
   vector<int> verts = G.getVertices();
@@ -350,6 +365,17 @@ void branchAndBound(Graph G, string instName, double cutoff) {
   BInit.solution = verts;
   BInit.instName = instName;
 
+  // Generate filestream info
+  stringstream fss;
+  fss << instName << "_BnB_" << cutoff;
+  string solFName = fss.str()+".sol";
+  string traceFName = fss.str()+".trace";
+  fss.str(string());
+  // Initialize trace file
+  trace.open(traceFName.c_str());
+  trace << fixed << setprecision(2) << G.sizeV << " 0.00" << endl;
+  trace.close();
+
   // Grab candidate vertices in descending order of connections
   vector< vector<int> > aLst = G.getAdjacencyList();
   sort(aLst.begin()+1, aLst.end(), cmpSize);
@@ -360,19 +386,29 @@ void branchAndBound(Graph G, string instName, double cutoff) {
   // Call the main iterator
   cout << "-------- SOLUTION FROM BRANCH AND BOUND SOLVER --------" << endl << endl;
   BnBInfo BSol = branchAndBoundIter(BInit, lpInit, cutoff, false);
+  sort(BSol.solution.begin(), BSol.solution.end());
   cout << "BRANCH AND BOUND SUMMARY" << endl;
   cout << "|V|=" << G.sizeV << ", |E|=" << G.sizeE << endl;
   BSol.printSolution();
   cout << "numVertices = " << BSol.solution.size() << endl;
   cout << "isVC = " << G.isVC(BSol.solution) << endl;
 
-  // Output info
+  // Output solution info
+  sol.open(solFName.c_str());
+  sol << BSol.solution.size() << endl;
+  if (BSol.solution.size() > 0) {
+    for (int i=0; i<BSol.solution.size()-1; i++) {
+      sol << BSol.solution[i] << ",";
+    }
+    sol << BSol.solution[BSol.solution.size()-1];
+  }
+  sol.close();
 
 }
 
 // Simple tests
 int main() {
-  Graph g = parseGraph("../input/football.graph");
-  branchAndBound(g, "", 1);
+  Graph g = parseGraph("../input/karate.graph");
+  branchAndBound(g, "karate", 1);
   return 1;
 }
