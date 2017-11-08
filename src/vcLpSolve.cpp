@@ -1,12 +1,16 @@
 /* CSE 6140 - LP Formulation for Vertex Cover */
 
+#ifndef VCLP_H
+#define VCLP_H
+
 /* Chosen method is Gurobi */
 #include <stdio.h>
 #include <sstream>
 #include <math.h>
 #include <unistd.h>
 #include "gurobi_c++.h"
-#include "global.hpp"
+#include "graph.hpp"
+#include "parseGraph.cpp"
 using namespace std;
 
 // Given a graph G, solve the LP relaxation of the Vertex Cover problem
@@ -80,3 +84,5 @@ GRBModel vcLpSolve(Graph G, bool printFlag) {
 //   cout << "ObjVal: " << vcModel.get(GRB_DoubleAttr_ObjVal) << endl;
 //   return 0;
 // }
+
+#endif

@@ -1,4 +1,4 @@
-/* CSE6140 Project - Simple Graph Classes */
+/* CSE 6140 Project - Simple Graph Classes */
 
 #ifndef GRAPH_H
 #define GRAPH_H

@@ -1,5 +1,8 @@
 /* CSE 6140 Project - Branch and Bound Method */
 
+#ifndef BNB_H
+#define BNB_H
+
 /* Chosen method is Gurobi */
 #include <stdio.h>
 #include <iomanip>  // setprecision
@@ -9,9 +12,15 @@
 #include <math.h>
 #include <algorithm>
 #include "gurobi_c++.h"
-#include "global.hpp"
+#include "graph.hpp"
+#include "parseGraph.cpp"
+#include "vcLpSolve.cpp"
 using namespace std;
 
+// Main functions
+void branchAndBound(Graph G, string instName, double cutoff);
+
+// Classes
 class BnBInfo {
 public:
   double time; // in seconds
@@ -437,7 +446,9 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
 // // Simple tests
 // int main() {
-//   Graph g = parseGraph("../input/football.graph");
-//   branchAndBound(g, "football", 1);
+//   Graph g = parseGraph("../input/karate.graph");
+//   branchAndBound(g, "karate", 1);
 //   return 1;
 // }
+
+#endif

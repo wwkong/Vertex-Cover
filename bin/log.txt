@@ -1,7 +1,593 @@
 -------- SOLUTION FROM BRANCH AND BOUND SOLVER --------
 
+Attempting to add vertex 34...
+Candidates = 1 33 3 2 4 32 9 24 14 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 1...
+Candidates = 33 3 2 4 32 9 24 14 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 33...
+Candidates = 3 2 4 32 9 24 14 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 3...
+Candidates = 2 4 32 9 24 14 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 2...
+Candidates = 4 32 9 24 14 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 4...
+Candidates = 32 9 24 14 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 32...
+Candidates = 9 24 14 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 9...
+Candidates = 24 14 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 24...
+Candidates = 14 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 14...
+Candidates = 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 7...
+Candidates = 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 31...
+Candidates = 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 30...
+Candidates = 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 28...
+Candidates = 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 6...
+Candidates = 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 8...
+Candidates = 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 8 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Attempting to add vertex 25...
+Candidates = 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 8 25 
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+Current Solution Size = 34, Branching LEFT...
+
+Adding vertex 5...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 8 25 5 
+Solution Size = 18
+Fathom due to OPTIMALITY!
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 25...
+Right LB = 18, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 8 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 8 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Attempting to remove vertex 8...
+Candidates = 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 8 25 5 
+Current Solution Size = 18, Branching RIGHT...
+
+Attempting to add vertex 25...
+Candidates = 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 8 25 5 
+Current Solution Size = 18, Branching LEFT...
+
+Adding vertex 5...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+Solution Size = 17
+Fathom due to OPTIMALITY!
+
+Result of LEFT Branch...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 8 25 5 
+
+Failed to remove vertex 25...
+Right LB = 17, Solution Size = 18
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+RETURN Combined Branches
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 6...
+Right LB = 17, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Attempting to remove vertex 28...
+Candidates = 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+Current Solution Size = 17, Branching RIGHT...
+
+Attempting to add vertex 6...
+Candidates = 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+Current Solution Size = 17, Branching LEFT...
+
+Failed to add vertex 8...
+Left LB = 17, Solution Size = 17
+
+Attempting to remove vertex 8...
+Candidates = 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+Current Solution Size = 17, Branching RIGHT...
+
+RIGHT -> LP is infeasible!
+
+Attempting to add vertex 25...
+Candidates = 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+Current Solution Size = 17, Branching LEFT...
+
+Adding vertex 5...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Solution Size = 16
+Fathom due to OPTIMALITY!
+
+Result of LEFT Branch...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+
+Failed to remove vertex 25...
+Right LB = 34, Solution Size = 17
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+RETURN Combined Branches
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 28 6 25 5 
+
+Failed to remove vertex 6...
+Right LB = 16, Solution Size = 17
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+RETURN Combined Branches
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 30...
+Right LB = 16, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Attempting to remove vertex 31...
+Candidates = 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Current Solution Size = 16, Branching RIGHT...
+
+Attempting to add vertex 30...
+Candidates = 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Current Solution Size = 16, Branching LEFT...
+
+Failed to add vertex 28...
+Left LB = 16, Solution Size = 16
+
+Attempting to remove vertex 28...
+Candidates = 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Current Solution Size = 16, Branching RIGHT...
+
+Attempting to add vertex 6...
+Candidates = 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 6 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Current Solution Size = 16, Branching LEFT...
+
+Failed to add vertex 8...
+Left LB = 16, Solution Size = 16
+
+Attempting to remove vertex 8...
+Candidates = 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 6 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Current Solution Size = 16, Branching RIGHT...
+
+RIGHT -> LP is infeasible!
+
+Attempting to add vertex 25...
+Candidates = 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+Current Solution Size = 16, Branching LEFT...
+
+Adding vertex 5...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Solution Size = 15
+Fathom due to OPTIMALITY!
+
+Result of LEFT Branch...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+
+Failed to remove vertex 25...
+Right LB = 34, Solution Size = 16
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+RETURN Combined Branches
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+
+Failed to remove vertex 6...
+Right LB = 15, Solution Size = 16
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+RETURN Combined Branches
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 31 30 6 25 5 
+
+Failed to remove vertex 30...
+Right LB = 15, Solution Size = 16
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+RETURN Combined Branches
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 7...
+Right LB = 15, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Attempting to remove vertex 14...
+Candidates = 7 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Current Solution Size = 15, Branching RIGHT...
+
+Attempting to add vertex 7...
+Candidates = 31 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Current Solution Size = 15, Branching LEFT...
+
+Failed to add vertex 31...
+Left LB = 15, Solution Size = 15
+
+Attempting to remove vertex 31...
+Candidates = 30 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Current Solution Size = 15, Branching RIGHT...
+
+Attempting to add vertex 30...
+Candidates = 28 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Current Solution Size = 15, Branching LEFT...
+
+Failed to add vertex 28...
+Left LB = 15, Solution Size = 15
+
+Attempting to remove vertex 28...
+Candidates = 6 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Current Solution Size = 15, Branching RIGHT...
+
+Attempting to add vertex 6...
+Candidates = 8 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Current Solution Size = 15, Branching LEFT...
+
+Failed to add vertex 8...
+Left LB = 15, Solution Size = 15
+
+Attempting to remove vertex 8...
+Candidates = 25 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Current Solution Size = 15, Branching RIGHT...
+
+RIGHT -> LP is infeasible!
+
+Attempting to add vertex 25...
+Candidates = 5 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+Current Solution Size = 15, Branching LEFT...
+
+Adding vertex 5...
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution Size = 14
+Fathom due to OPTIMALITY!
+
+Result of LEFT Branch...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+
+Failed to remove vertex 25...
+Right LB = 34, Solution Size = 15
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+
+Failed to remove vertex 6...
+Right LB = 14, Solution Size = 15
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+
+Failed to remove vertex 30...
+Right LB = 14, Solution Size = 15
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 34 1 33 3 2 4 32 9 24 14 7 30 6 25 5 
+
+Failed to remove vertex 7...
+Right LB = 14, Solution Size = 15
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 24...
+Right LB = 14, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 9...
+Right LB = 14, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 32...
+Right LB = 15, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 4...
+Right LB = 16, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 2...
+Right LB = 18, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 3...
+Right LB = 17, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 33...
+Right LB = 19, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 1...
+Right LB = 21, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
+Result of LEFT Branch...
+Solution = 1 2 3 4 5 6 7 8 9 11 12 13 14 18 20 22 32 31 10 28 29 33 17 34 15 16 19 21 23 24 26 30 25 27 
+
+Failed to remove vertex 34...
+Right LB = 25, Solution Size = 34
+
+Candidates = 11 29 26 20 22 23 13 15 21 27 19 10 18 17 16 12 
+Vertex Set = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+Solution = 34 1 33 3 2 4 32 9 24 7 30 6 25 5 
+RETURN Combined Branches
+
 BRANCH AND BOUND SUMMARY
-|V|=115, |E|=613
-Solution = 1 2 3 4 5 6 7 8 10 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 35 36 38 39 41 42 44 45 46 48 49 50 52 54 55 56 58 59 60 61 62 63 64 65 66 67 68 69 70 71 73 74 75 77 78 79 80 81 82 83 84 85 87 88 89 90 91 92 93 96 97 99 100 101 102 103 104 105 106 107 108 110 111 112 113 115 
-numVertices = 97
+|V|=34, |E|=78
+Solution = 1 2 3 4 5 6 7 9 24 25 30 32 33 34 
+numVertices = 14
 isVC = 1
