@@ -117,19 +117,5 @@ int main (int argc, char **argv) {
   double sStart = startTime.tv_sec*1000.0;
   double sEnd = endTime.tv_sec*1000.0;
   double totalTime = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
-  // Note: totalTime is in seconds
-
-  // Output some finalized diagnostics
-  string outFileName;
-  ofstream output;
-  ostringstream tmp1, tmp2;
-  // Main streams
-  tmp1 << floor(cutoff);
-  tmp2 << seed;
-  outFileName = "diag_tmp.stats";
-  cout << "Outputting statistics to: "<< outFileName << endl;
-  output.open(outFileName.c_str());
-  output << fixed << setprecision(6) << totalTime << " " << finalQuality << endl;
-  output.close();
 
 }
