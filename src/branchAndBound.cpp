@@ -91,9 +91,10 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
     ofstream trace;
     string traceFName;
     BnBInfo BVIn, BVOut, BLeft, BRight, BFinal;
-    time_t startTimer, timerS, timer1, timer2, timer3, timer4;
+    timespec startTime, endTime;
     double diffSec, leftLB, rightLB;
-    time(&startTimer);
+    double sStart, sEnd, totalTime;
+    clock_gettime(CLOCK_REALTIME, &startTime);
 
     // Update the info
     int vSplit = B.candidates[0];
@@ -117,13 +118,18 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
         cout << "Solution Size = " << BVIn.solution.size() << endl;
         cout << "Fathom due to OPTIMALITY!" << endl << endl;
       }
+
       // Update time
-      time(&timer1);
-      diffSec = difftime(timer1, startTimer);
+      clock_gettime(CLOCK_REALTIME, &endTime);
+      sStart = startTime.tv_sec*1000.0;
+      sEnd = endTime.tv_sec*1000.0;
+      diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
+      clock_gettime(CLOCK_REALTIME, &startTime);
       BVIn.time += diffSec;
       if (BVIn.time >= cutoff*60) {
         BVIn.time = cutoff*60;
       }
+
       // Output
       fss << BVIn.instName << "_BnB_" << cutoff;
       traceFName = fss.str()+".trace";
@@ -231,9 +237,14 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
     }
 
     // Check our runtime
-    time(&timer1);
-    diffSec = difftime(timer1, startTimer);
+    clock_gettime(CLOCK_REALTIME, &endTime);
+    sStart = startTime.tv_sec*1000.0;
+    sEnd = endTime.tv_sec*1000.0;
+    diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
+    clock_gettime(CLOCK_REALTIME, &startTime);
     B.time += diffSec;
+    BVIn.time = B.time;
+    BVOut.time = B.time;
     if (B.time >= cutoff*60) {
       B.time = cutoff*60;
       return B;
@@ -242,11 +253,11 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
     // ====================================
     // Determine branching strategy
     // ====================================
-    BLeft = B;
-    BRight = B;
+    BLeft = BVIn;
+    BRight = BVOut;
 
     // LEFT
-    if (leftLB < B.solution.size()) {
+    if (leftLB < BVIn.solution.size()) {
       if (debug) {
         cout << "Attempting to add vertex " << vSplit << "..." << endl;
         BVIn.printCandidates();
@@ -304,6 +315,15 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
       if (debug) {
         cout << "Lower bound exceeds current solution size in branches!" << endl << endl;
       }
+      clock_gettime(CLOCK_REALTIME, &endTime);
+      sStart = startTime.tv_sec*1000.0;
+      sEnd = endTime.tv_sec*1000.0;
+      diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
+      clock_gettime(CLOCK_REALTIME, &startTime);
+      B.time += diffSec;
+      if (B.time >= cutoff*60) {
+        B.time = cutoff*60;
+      }
       return B;
     }
 
@@ -320,6 +340,15 @@ BnBInfo branchAndBoundIter(BnBInfo B, GRBModel M, double cutoff, bool debug) {
       BFinal.printVertexSet();
       BFinal.printSolution();
       cout << "RETURN Combined Branches" << endl << endl;
+    }
+    clock_gettime(CLOCK_REALTIME, &endTime);
+    sStart = startTime.tv_sec*1000.0;
+    sEnd = endTime.tv_sec*1000.0;
+    diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
+    clock_gettime(CLOCK_REALTIME, &startTime);
+    BFinal.time = B.time + diffSec;
+    if (BFinal.time >= cutoff*60) {
+      BFinal.time = cutoff*60;
     }
     return BFinal;
 
@@ -406,9 +435,9 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
 }
 
-// Simple tests
-int main() {
-  Graph g = parseGraph("../input/karate.graph");
-  branchAndBound(g, "karate", 1);
-  return 1;
-}
+// // Simple tests
+// int main() {
+//   Graph g = parseGraph("../input/football.graph");
+//   branchAndBound(g, "football", 1);
+//   return 1;
+// }
