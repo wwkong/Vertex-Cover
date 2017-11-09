@@ -80,7 +80,7 @@ bool BnBInfo::isOptimal() {
     fss.str(string());
     // Output trace info
     trace.open(traceFName.c_str(), ios_base::app);
-    trace << fixed << setprecision(2) << solution.size() << " " << time << endl;
+    trace << fixed << setprecision(2) << time << ", " << solution.size() << endl;
     trace.close();
     // Output solution info
     sort(solution.begin(), solution.end());

@@ -218,7 +218,7 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
   // Initialize trace file
   trace.open(traceFName.c_str());
-  trace << fixed << setprecision(2) << G.sizeV << " 0.00" << endl;
+  trace << fixed << setprecision(2) << "0.00, " << G.sizeV << endl;
   trace.close();
   // Initial solution file
   sol.open(solFName.c_str());
