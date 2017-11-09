@@ -24,6 +24,7 @@ public:
   int sizeV;
   int sizeE;
   // HISTORY
+  vector<int>           prevEdgesNum;
   vector<char>          prevTypes; // '1' = add vertex, '0' = remove vertex
   vector<int>           prevVertices;
   vector<Edge>          prevEdges;
@@ -35,6 +36,8 @@ public:
   vector<int> solution;
   // Constructors
   BnBInfo();
+  // Optimality
+  bool isOptimal(double);
   // Branching
   bool inclVertex(GRBModel*); // Should we include the last vertex in 'candidates'?
   bool exclVertex(GRBModel*); // Should we exclude the last vertex in 'candidates'
@@ -43,12 +46,42 @@ public:
   void printCandidates();
   void printVertexSet();
   void printSolution();
-  void updateEdgeSet();
+  void printPrevEdgeNum();
 };
 
 // Constructors
 BnBInfo::BnBInfo() {
   time = 0;
+}
+
+// Optimality
+bool BnBInfo::isOptimal(double cutoff) {
+
+  stringstream ss, fss;
+  ofstream trace;
+  string traceFName;
+  if (edgeSet.empty() && vertexSet.size() < solution.size()) {
+
+    // Update and add to the trace log
+    solution = vertexSet;
+    if (debug) {
+      printSolution();
+      cout << "Solution Size = " << solution.size() << endl;
+      cout << "Fathom due to OPTIMALITY!" << endl << endl;
+    }
+
+    // Output
+    fss << instName << "_BnB_" << cutoff;
+    traceFName = fss.str()+".trace";
+    fss.str(string());
+    trace.open(traceFName.c_str(), ios_base::app);
+    trace << fixed << setprecision(2) << solution.size() << " " << time << endl;
+    trace.close();
+
+    return true;
+  } else {
+    return false;
+  }
 }
 
 // ------------------ Branching (LEFT) ------------------
@@ -116,7 +149,7 @@ bool BnBInfo::inclVertex(GRBModel *MPtr) {
     // Update the components
     candidates.pop_back();
     vertexSet.push_back(vSplit);
-    prevType.push_back('1');
+    prevTypes.push_back('1');
     prevConstrNames.push_back(constrName);
     prevVertices.push_back(vSplit);
     // Edges in particular
@@ -126,15 +159,18 @@ bool BnBInfo::inclVertex(GRBModel *MPtr) {
       vBoolArr[vertexSet[i]] = true;
     }
     Edge e;
+    int pEdgesN = 0;
     for (int i=0; i<edgeSet.size(); i++) {
       e = edgeSet[i];
       if ((vBoolArr[e.start] == false) && (vBoolArr[e.end] == false)) {
         newESet.push_back(e);
       } else {
         prevEdges.push_back(e);
+        pEdgesN++;
       }
     }
     edgeSet = newESet;
+    prevEdgesNum.push_back(pEdgesN);
     return true;
   }
 }
@@ -177,9 +213,10 @@ bool BnBInfo::exclVertex(GRBModel *MPtr) {
   else {
     // Update the components
     candidates.pop_back();
-    prevType.push_back('0');
-    prevConstrName = constrName;
-    prevVertex = vSplit;
+    prevTypes.push_back('0');
+    prevConstrNames.push_back(constrName);
+    prevVertices.push_back(vSplit);
+    prevEdgesNum.push_back(0);
     return true;
   }
 }
@@ -187,31 +224,41 @@ void BnBInfo::restoreState(GRBModel *MPtr) {
 
   if (debug) {
     cout << "Attempting to restore state..." << endl;
-    cout << "Previous Type = " << prevType.back() << endl;
-    cout << "Previous Vertex = " << prevVertex << endl;
-    cout << "Previous Constraint Name = " << prevConstrName << endl;
+    cout << "Previous Type = " << prevTypes.back() << endl;
+    cout << "Previous Vertex = " << prevVertices.back() << endl;
+    cout << "Previous Constraint Name = " << prevConstrNames.back() << endl;
     cout << "Size of Previous Edges = " << prevEdges.size() << endl;
+    cout << "Size of Edge Set = " << edgeSet.size() << endl;
+    cout << "Size of Previous Edges Num = " << prevEdgesNum.back() << endl;
+    cout << "Solution Size = " << solution.size() << endl;
     printVertexSet();
     printCandidates();
     printSolution();
+    printPrevEdgeNum();
   }
 
-  char type = prevType.back();
-  prevType.pop_back();
+  // Get the latest info
+  int eNum = prevEdgesNum.back();
+  int vertex = prevVertices.back();
+  char type = prevTypes.back();
+  string constr = prevConstrNames.back();
+  prevEdgesNum.pop_back();
+  prevVertices.pop_back();
+  prevTypes.pop_back();
+  prevConstrNames.pop_back();
+  // Case where we have updated vertexSet and edgeSet
   if (type == '1') {
     vertexSet.pop_back();
   }
-  candidates.push_back(prevVertex);
-  for (int i=0; i<prevEdges.size(); i++) {
-    edgeSet.push_back(prevEdges[i]);
+  // Reinstate candidates and edges
+  candidates.push_back(vertex);
+  for(int i=0; i<eNum; i++) {
+    edgeSet.push_back(prevEdges.back());
+    prevEdges.pop_back();
   }
-  if (prevEdges.size() > 0) {
-    prevEdges.clear();
-  }
-  prevVertex = -1;
   // Remove a constraint
   try {
-    MPtr->remove(MPtr->getConstrByName(prevConstrName));
+    MPtr->remove(MPtr->getConstrByName(constr));
   }
   // Catch errors
   catch(GRBException e) {
@@ -221,7 +268,7 @@ void BnBInfo::restoreState(GRBModel *MPtr) {
     cout << "Exception during optimization" << endl;
   }
 
-
+  // Sucessful restore!
   if (debug) {
     cout << "Success!" << endl << endl;
   }
@@ -248,20 +295,12 @@ void BnBInfo::printSolution() {
   }
   cout << endl;
 }
-void BnBInfo::updateEdgeSet() {
-  vector<Edge> newESet;
-  vector<bool> vBoolArr(sizeV+1, false);
-  for (int i=0; i<vertexSet.size(); i++) {
-    vBoolArr[vertexSet[i]] = true;
+void BnBInfo::printPrevEdgeNum() {
+  cout << "Previous Edge Num = " ;
+  for(int i=0; i<prevEdgesNum.size(); i++) {
+    cout << prevEdgesNum[i] << " ";
   }
-  Edge e;
-  for (int i=0; i<edgeSet.size(); i++) {
-    e = edgeSet[i];
-    if ((vBoolArr[e.start] == false) && (vBoolArr[e.end] == false)) {
-      newESet.push_back(e);
-    }
-  }
-  edgeSet = newESet;
+  cout << endl;
 }
 
 #endif

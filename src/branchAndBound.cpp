@@ -32,51 +32,25 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
   }
 
   // Helper variables
-  int nVars, nConstrs;
-  vector<int> VBases;
-  vector<int> CBases;
-  stringstream ss, fss;
-  ofstream trace;
-  string traceFName;
-  BnBInfo BVIn, BVOut, BLeft, BRight, BFinal;
   timespec startTime, endTime;
-  double diffSec, leftLB, rightLB;
+  double diffSec;
   double sStart, sEnd, totalTime;
   clock_gettime(CLOCK_REALTIME, &startTime);
 
-  // =============================
-  // Check optimality (BOTTLENECK)
-  // =============================
-  if (B->edgeSet.empty() && B->vertexSet.size() < B->solution.size()) {
-
-    // Update and add to the trace log
-    B->solution = B->vertexSet;
-    if (B->debug) {
-      B->printSolution();
-      cout << "Solution Size = " << B->solution.size() << endl;
-      cout << "Fathom due to OPTIMALITY!" << endl << endl;
-    }
-
-    // Update time
-    clock_gettime(CLOCK_REALTIME, &endTime);
-    sStart = startTime.tv_sec*1000.0;
-    sEnd = endTime.tv_sec*1000.0;
-    diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
-    clock_gettime(CLOCK_REALTIME, &startTime);
-    B->time += diffSec;
-    if (B->time >= cutoff*60) {
-      B->time = cutoff*60;
-    }
-
-    // Output
-    fss << B->instName << "_BnB_" << cutoff;
-    traceFName = fss.str()+".trace";
-    fss.str(string());
-    trace.open(traceFName.c_str(), ios_base::app);
-    trace << fixed << setprecision(2) << B->solution.size() << " " << diffSec + B->time << endl;
-    trace.close();
+  // Check optimality
+  if (B->isOptimal(cutoff))
     return;
 
+  // Check our runtime
+  clock_gettime(CLOCK_REALTIME, &endTime);
+  sStart = startTime.tv_sec*1000.0;
+  sEnd = endTime.tv_sec*1000.0;
+  diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
+  clock_gettime(CLOCK_REALTIME, &startTime);
+  B->time += diffSec;
+  if (B->time >= cutoff*60) {
+    B->time = cutoff*60;
+    return;
   }
 
   // ====================================
@@ -92,7 +66,7 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
   sEnd = endTime.tv_sec*1000.0;
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
-  B->time = diffSec;
+  B->time += diffSec;
   if (B->time >= cutoff*60) {
     B->time = cutoff*60;
     return;
@@ -123,9 +97,16 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
     return;
   }
 
+  // Check optimality
+  if (B->isOptimal(cutoff))
+    return;
+
   // =====================================
   // Exclude the candidate vertex? (RIGHT)
   // =====================================
+
+  // Reset the timer
+  clock_gettime(CLOCK_REALTIME, &startTime);
 
   // Check if we should branch right
   bool goRight = B->exclVertex(M);
@@ -136,7 +117,7 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
   sEnd = endTime.tv_sec*1000.0;
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
-  B->time = diffSec;
+  B->time += diffSec;
   if (B->time >= cutoff*60) {
     B->time = cutoff*60;
     return;
@@ -168,6 +149,10 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
     return;
   }
 
+  // Check optimality
+  if (B->isOptimal(cutoff))
+    return;
+
   // Go up a level
   return;
 
@@ -185,13 +170,10 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
   // Initialize trivial components
   BnBInfo BSol;
-  BSol.debug = true;
+  BSol.debug = false;
   BSol.time = 0;
   BSol.sizeV = G.sizeV;
   BSol.sizeE = G.sizeE;
-  BSol.prevVertex = -1;
-  BSol.prevEdges = vector<Edge> ();
-  BSol.vertexSet = vector<int> ();
   BSol.edgeSet = G.getEdges();
   BSol.solution = verts;
   BSol.instName = instName;
@@ -240,8 +222,8 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
 // Simple tests
 int main() {
-  Graph g = parseGraph("../input/karate.graph");
-  branchAndBound(g, "karate", 1);
+  Graph g = parseGraph("../input/jazz.graph");
+  branchAndBound(g, "jazz", 1);
   return 1;
 }
 
