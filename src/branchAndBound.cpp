@@ -37,6 +37,9 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   double sStart, sEnd, totalTime;
   clock_gettime(CLOCK_REALTIME, &startTime);
 
+  // Check feasibility
+  if (B->candidates.size() == 0) 
+    return;
   // Check optimality
   if (B->isOptimal())
     return;
@@ -53,12 +56,32 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
     return;
   }
 
+  // Gather info
+  double inclObjVal = B->solution.size()+1;
+  double exclObjVal = B->solution.size()+1;
+  if (B->debug) {
+    cout << "Gathering LB data..." << endl;
+  }
+  inclObjVal = B->getInclLB(M);
+  exclObjVal = B->getExclLB(M);
+
   // ====================================
-  // Include the candidate vertex? (LEFT)
+  // First Branch
   // ====================================
 
-  // Check if we should branch left
-  bool goLeft = B->inclVertex(M);
+  // Check where we should branch
+  bool goBranch;
+  string branchType;
+  if (B->debug) {
+    cout << "Deciding branch direction..." <<endl;
+  }
+  if (inclObjVal < exclObjVal) {
+    goBranch = B->inclVertex(M);
+    branchType = "LEFT";
+  } else {
+    goBranch = B->exclVertex(M);
+    branchType = "RIGHT";
+  }
 
   // Check our runtime
   clock_gettime(CLOCK_REALTIME, &endTime);
@@ -73,16 +96,16 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   }
 
   // Update
-  if (goLeft) {
+  if (goBranch) {
     if(B->debug) {
       B->printCandidates();
       B->printVertexSet();
       B->printSolution();
-      cout << "Current Solution Size = " << B->solution.size() << ", Branching LEFT..." << endl << endl;
+      cout << "Current Solution Size = " << B->solution.size() << ", Branching " << branchType << endl << endl;
     }
     branchAndBoundIter(B, M);
     if (B->debug) {
-      cout << "Result of LEFT Branch..." << endl;
+      cout << "Result of Branching " << branchType << endl;
       B->printSolution();
       cout << endl;
     }
@@ -102,14 +125,20 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
     return;
 
   // =====================================
-  // Exclude the candidate vertex? (RIGHT)
+  // Second branch
   // =====================================
 
   // Reset the timer
   clock_gettime(CLOCK_REALTIME, &startTime);
 
-  // Check if we should branch right
-  bool goRight = B->exclVertex(M);
+  // Check where we should branch next
+  if (inclObjVal >= exclObjVal) {
+    goBranch = B->inclVertex(M);
+    branchType = "LEFT";
+  } else {
+    goBranch = B->exclVertex(M);
+    branchType = "RIGHT";
+  }
 
   // Check our runtime
   clock_gettime(CLOCK_REALTIME, &endTime);
@@ -124,16 +153,16 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   }
 
   // Update
-  if (goRight) {
+  if (goBranch) {
     if(B->debug) {
       B->printCandidates();
       B->printVertexSet();
       B->printSolution();
-      cout << "Current Solution Size = " << B->solution.size() << ", Branching RIGHT..." << endl << endl;
+      cout << "Current Solution Size = " << B->solution.size() << ", Branching " << branchType << endl << endl;
     }
     branchAndBoundIter(B, M);
     if (B->debug) {
-      cout << "Result of RIGHT Branch..." << endl;
+      cout << "Result of Branching " << branchType << endl;
       B->printSolution();
       cout << endl;
     }
@@ -167,6 +196,7 @@ void branchAndBound(Graph G, string instName, double cutoff) {
   ofstream sol, trace;
   GRBModel lpInit = vcLpSolve(G, false);
   vector<int> verts = G.getVertices();
+  sort(verts.begin(), verts.end());
 
   // Initialize trivial components
   BnBInfo BSol;
@@ -200,7 +230,6 @@ void branchAndBound(Graph G, string instName, double cutoff) {
     sol << verts[verts.size()-1];
   }
   sol.close();
-
 
   // Grab candidate vertices in ascending order of connections
   vector< vector<int> > aLst = G.getAdjacencyList();

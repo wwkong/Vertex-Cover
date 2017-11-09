@@ -40,6 +40,8 @@ public:
   // Optimality
   bool isOptimal();
   // Branching
+  double getInclLB(GRBModel*); // Lower bound if we include a vertex
+  double getExclLB(GRBModel*); // Lower bound if we exclude a vertex
   bool inclVertex(GRBModel*); // Should we include the last vertex in 'candidates'?
   bool exclVertex(GRBModel*); // Should we exclude the last vertex in 'candidates'
   void restoreState(GRBModel*);  // Revert to a state one level up
@@ -97,116 +99,183 @@ bool BnBInfo::isOptimal() {
     return false;
   }
 }
-
-// ------------------ Branching (LEFT) ------------------
-bool BnBInfo::inclVertex(GRBModel *MPtr) {
-
-  // *** Note *** Removed warm start due to high memory consumption
+// Branching
+double BnBInfo::getInclLB(GRBModel *MPtr) {
   // <--- Start new Gurobi model to get lower bound --->
   int vSplit = candidates.back();
   stringstream ss;
   ss << vSplit;
-  string constrName = "v"+ss.str()+"_1";
-  MPtr->addConstr(MPtr->getVarByName("v"+ss.str()) == 1, &constrName[0]);
+  MPtr->addConstr(MPtr->getVarByName("v"+ss.str()) == 1, "dummy");
   ss.str(string());
-  // MPtr->getEnv().set(GRB_IntParam_OutputFlag, true);
   MPtr->update();
   MPtr->optimize();
   // <--- End New Gurobi Model --->
-
-  // Infeasible model
+  // Infeasible case
+  double objVal;
   if (MPtr->get(GRB_IntAttr_Status) == 3) {
-    if (debug) {
-      cout << "LEFT -> LP is infeasible!" << endl << endl;
-    }
-    MPtr->remove(MPtr->getConstrByName(constrName));
-    return false;
+    objVal = solution.size()+1;
   }
-  // Lower bound exceeds current solution
-  else if (ceil(MPtr->get(GRB_DoubleAttr_ObjVal)) > solution.size()){
-    if (debug) {
-      cout << "Failed to add vertex " << vSplit << "..." << endl;
-      cout << "Left LB = " << ceil(MPtr->get(GRB_DoubleAttr_ObjVal));
-      cout << ", Solution Size = " << solution.size() << endl << endl;
-    }
-    MPtr->remove(MPtr->getConstrByName(constrName));
-    return false;
-  }
-  // There is potential for improvement
+  // Feasible case
   else {
-    // Update the components
-    candidates.pop_back();
-    vertexSet.push_back(vSplit);
-    prevTypes.push_back('1');
-    prevConstrNames.push_back(constrName);
-    prevVertices.push_back(vSplit);
-    // Edges in particular
-    vector<Edge> newESet;
-    vector<bool> vBoolArr(sizeV+1, false);
-    for (int i=0; i<vertexSet.size(); i++) {
-      vBoolArr[vertexSet[i]] = true;
-    }
-    Edge e;
-    int pEdgesN = 0;
-    for (int i=0; i<edgeSet.size(); i++) {
-      e = edgeSet[i];
-      if ((vBoolArr[e.start] == false) && (vBoolArr[e.end] == false)) {
-        newESet.push_back(e);
-      } else {
-        prevEdges.push_back(e);
-        pEdgesN++;
-      }
-    }
-    edgeSet = newESet;
-    prevEdgesNum.push_back(pEdgesN);
-    return true;
+    objVal = MPtr->get(GRB_DoubleAttr_ObjVal);
   }
+  MPtr->remove(MPtr->getConstrByName("dummy"));
+  return objVal;
+}
+double BnBInfo::getExclLB(GRBModel *MPtr) {
+  // <--- Start new Gurobi model to get lower bound --->
+  int vSplit = candidates.back();
+  stringstream ss;
+  ss << vSplit;
+  MPtr->addConstr(MPtr->getVarByName("v"+ss.str()) == 0, "dummy");
+  ss.str(string());
+  MPtr->update();
+  MPtr->optimize();
+  // <--- End New Gurobi Model --->
+  // Infeasible case
+  double objVal;
+  if (MPtr->get(GRB_IntAttr_Status) == 3) {
+    objVal = solution.size()+1;
+  }
+  // Feasible case
+  else {
+    objVal = MPtr->get(GRB_DoubleAttr_ObjVal);
+  }
+  MPtr->remove(MPtr->getConstrByName("dummy"));
+  return objVal;
+}
+
+// ------------------ Branching (LEFT) ------------------
+bool BnBInfo::inclVertex(GRBModel *MPtr) {
+
+  // try {
+    // *** Note *** Removed warm start due to high memory consumption
+    // <--- Start new Gurobi model to get lower bound --->
+    int vSplit = candidates.back();
+    stringstream ss;
+    ss << vSplit;
+    string constrName = "v"+ss.str()+"_1";
+    MPtr->addConstr(MPtr->getVarByName("v"+ss.str()) == 1, &constrName[0]);
+    ss.str(string());
+    // MPtr->getEnv().set(GRB_IntParam_OutputFlag, true);
+    MPtr->update();
+    MPtr->optimize();
+    // <--- End New Gurobi Model --->
+
+    // Infeasible model
+    if (MPtr->get(GRB_IntAttr_Status) == 3) {
+      if (debug) {
+        cout << "LEFT -> LP is infeasible!" << endl << endl;
+      }
+      MPtr->remove(MPtr->getConstrByName(constrName));
+      return false;
+    }
+    // Lower bound exceeds current solution
+    else if (ceil(MPtr->get(GRB_DoubleAttr_ObjVal)) > solution.size()){
+      if (debug) {
+        cout << "Failed to add vertex " << vSplit << "..." << endl;
+        cout << "Left LB = " << ceil(MPtr->get(GRB_DoubleAttr_ObjVal));
+        cout << ", Solution Size = " << solution.size() << endl << endl;
+      }
+      MPtr->remove(MPtr->getConstrByName(constrName));
+      return false;
+    }
+    // There is potential for improvement
+    else {
+      // Update the components
+      candidates.pop_back();
+      vertexSet.push_back(vSplit);
+      prevTypes.push_back('1');
+      prevConstrNames.push_back(constrName);
+      prevVertices.push_back(vSplit);
+      // Edges in particular
+      vector<Edge> newESet;
+      vector<bool> vBoolArr(sizeV+1, false);
+      for (int i=0; i<vertexSet.size(); i++) {
+        vBoolArr[vertexSet[i]] = true;
+      }
+      Edge e;
+      int pEdgesN = 0;
+      for (int i=0; i<edgeSet.size(); i++) {
+        e = edgeSet[i];
+        if ((vBoolArr[e.start] == false) && (vBoolArr[e.end] == false)) {
+          newESet.push_back(e);
+        } else {
+          prevEdges.push_back(e);
+          pEdgesN++;
+        }
+      }
+      edgeSet = newESet;
+      prevEdgesNum.push_back(pEdgesN);
+      return true;
+    }
+  // }
+  // // Catch errors
+  // catch(GRBException e) {
+  //   cout << "Error code = " << e.getErrorCode() << endl;
+  //   cout << e.getMessage() << endl;
+  // } catch(...) {
+  //   cout << "Exception during optimization" << endl;
+  // }
+  // return false;
+
 }
 
 // ------------------ Branching (RIGHT) ------------------
 bool BnBInfo::exclVertex(GRBModel *MPtr) {
 
-  // *** Note *** Removed the warm start since the presolver is usually faster
-  // <--- Start new Gurobi model to get lower bound --->
-  int vSplit = candidates.back();
-  stringstream ss;
-  ss << vSplit;
-  string constrName = "v"+ss.str()+"_0";
-  MPtr->addConstr(MPtr->getVarByName("v"+ss.str()) == 0, &constrName[0]);
-  ss.str(string());
-  // MPtr->getEnv().set(GRB_IntParam_OutputFlag, true);
-  MPtr->update();
-  MPtr->optimize();
-  // <--- End New Gurobi Model --->
+  // try {
+    // *** Note *** Removed the warm start since the presolver is usually faster
+    // <--- Start new Gurobi model to get lower bound --->
+    int vSplit = candidates.back();
+    stringstream ss;
+    ss << vSplit;
+    string constrName = "v"+ss.str()+"_0";
+    MPtr->addConstr(MPtr->getVarByName("v"+ss.str()) == 0, &constrName[0]);
+    ss.str(string());
+    // MPtr->getEnv().set(GRB_IntParam_OutputFlag, true);
+    MPtr->update();
+    MPtr->optimize();
+    // <--- End New Gurobi Model --->
 
-  // Infeasible model
-  if (MPtr->get(GRB_IntAttr_Status) == 3) {
-    if (debug) {
-      cout << "RIGHT -> LP is infeasible!" << endl << endl;
+    // Infeasible model
+    if (MPtr->get(GRB_IntAttr_Status) == 3) {
+      if (debug) {
+        cout << "RIGHT -> LP is infeasible!" << endl << endl;
+      }
+      MPtr->remove(MPtr->getConstrByName(constrName));
+      return false;
     }
-    MPtr->remove(MPtr->getConstrByName(constrName));
-    return false;
-  }
-  // Lower bound exceeds current solution
-  else if (ceil(MPtr->get(GRB_DoubleAttr_ObjVal)) > solution.size()){
-    if (debug) {
-      cout << "Failed to remove vertex " << vSplit << "..." << endl;
-      cout << "Right LB = " << ceil(MPtr->get(GRB_DoubleAttr_ObjVal));
-      cout << ", Solution Size = " << solution.size() << endl << endl;
+    // Lower bound exceeds current solution
+    else if (ceil(MPtr->get(GRB_DoubleAttr_ObjVal)) > solution.size()){
+      if (debug) {
+        cout << "Failed to remove vertex " << vSplit << "..." << endl;
+        cout << "Right LB = " << ceil(MPtr->get(GRB_DoubleAttr_ObjVal));
+        cout << ", Solution Size = " << solution.size() << endl << endl;
+      }
+      MPtr->remove(MPtr->getConstrByName(constrName));
+      return false;
     }
-    MPtr->remove(MPtr->getConstrByName(constrName));
-    return false;
-  }
-  // There is potential for improvement
-  else {
-    // Update the components
-    candidates.pop_back();
-    prevTypes.push_back('0');
-    prevConstrNames.push_back(constrName);
-    prevVertices.push_back(vSplit);
-    prevEdgesNum.push_back(0);
-    return true;
-  }
+    // There is potential for improvement
+    else {
+      // Update the components
+      candidates.pop_back();
+      prevTypes.push_back('0');
+      prevConstrNames.push_back(constrName);
+      prevVertices.push_back(vSplit);
+      prevEdgesNum.push_back(0);
+      return true;
+    }
+  // }
+  // // Catch errors
+  // catch(GRBException e) {
+  //   cout << "Error code = " << e.getErrorCode() << endl;
+  //   cout << e.getMessage() << endl;
+  // } catch(...) {
+  //   cout << "Exception during optimization" << endl;
+  // }
+  // return false;
+
 }
 void BnBInfo::restoreState(GRBModel *MPtr) {
 
