@@ -24,10 +24,10 @@ bool cmpSize(vector<int> a, vector<int> b) {
 
 // Subroutine / Iterator which performs the branching
 // branchAndBoundIter :: BnBInfo -> GRBModel* -> Double -> Bool -> BnBInfo
-void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
+void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
 
   // Check our runtime
-  if (B->time >= 60*cutoff) {
+  if (B->time >= 60*B->cutoff) {
     return;
   }
 
@@ -38,7 +38,7 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
   clock_gettime(CLOCK_REALTIME, &startTime);
 
   // Check optimality
-  if (B->isOptimal(cutoff))
+  if (B->isOptimal())
     return;
 
   // Check our runtime
@@ -48,8 +48,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
   B->time += diffSec;
-  if (B->time >= cutoff*60) {
-    B->time = cutoff*60;
+  if (B->time >= B->cutoff*60) {
+    B->time = B->cutoff*60;
     return;
   }
 
@@ -67,8 +67,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
   B->time += diffSec;
-  if (B->time >= cutoff*60) {
-    B->time = cutoff*60;
+  if (B->time >= B->cutoff*60) {
+    B->time = B->cutoff*60;
     return;
   }
 
@@ -80,7 +80,7 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
       B->printSolution();
       cout << "Current Solution Size = " << B->solution.size() << ", Branching LEFT..." << endl << endl;
     }
-    branchAndBoundIter(B, M, cutoff);
+    branchAndBoundIter(B, M);
     if (B->debug) {
       cout << "Result of LEFT Branch..." << endl;
       B->printSolution();
@@ -92,13 +92,13 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
   }
 
   // Check our runtime
-  if (B->time >= cutoff*60) {
-    B->time = cutoff*60;
+  if (B->time >= B->cutoff*60) {
+    B->time = B->cutoff*60;
     return;
   }
 
   // Check optimality
-  if (B->isOptimal(cutoff))
+  if (B->isOptimal())
     return;
 
   // =====================================
@@ -118,8 +118,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
   B->time += diffSec;
-  if (B->time >= cutoff*60) {
-    B->time = cutoff*60;
+  if (B->time >= B->cutoff*60) {
+    B->time = B->cutoff*60;
     return;
   }
 
@@ -131,7 +131,7 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
       B->printSolution();
       cout << "Current Solution Size = " << B->solution.size() << ", Branching RIGHT..." << endl << endl;
     }
-    branchAndBoundIter(B, M, cutoff);
+    branchAndBoundIter(B, M);
     if (B->debug) {
       cout << "Result of RIGHT Branch..." << endl;
       B->printSolution();
@@ -144,13 +144,13 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M, double cutoff) {
   }
 
   // Check our runtime
-  if (B->time >= cutoff*60) {
-    B->time = cutoff*60;
+  if (B->time >= B->cutoff*60) {
+    B->time = B->cutoff*60;
     return;
   }
 
   // Check optimality
-  if (B->isOptimal(cutoff))
+  if (B->isOptimal())
     return;
 
   // Go up a level
@@ -172,6 +172,7 @@ void branchAndBound(Graph G, string instName, double cutoff) {
   BnBInfo BSol;
   BSol.debug = false;
   BSol.time = 0;
+  BSol.cutoff = cutoff;
   BSol.sizeV = G.sizeV;
   BSol.sizeE = G.sizeE;
   BSol.edgeSet = G.getEdges();
@@ -189,6 +190,17 @@ void branchAndBound(Graph G, string instName, double cutoff) {
   trace.open(traceFName.c_str());
   trace << fixed << setprecision(2) << G.sizeV << " 0.00" << endl;
   trace.close();
+  // Initial solution file
+  sol.open(solFName.c_str());
+  sol << verts.size() << endl;
+  if (verts.size() > 0) {
+    for (int i=0; i<verts.size()-1; i++) {
+      sol << verts[i] << ",";
+    }
+    sol << verts[verts.size()-1];
+  }
+  sol.close();
+
 
   // Grab candidate vertices in ascending order of connections
   vector< vector<int> > aLst = G.getAdjacencyList();
@@ -199,7 +211,7 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
   // Call the main iterator
   cout << "-------- SOLUTION FROM BRANCH AND BOUND SOLVER --------" << endl << endl;
-  branchAndBoundIter(&BSol, &lpInit, cutoff);
+  branchAndBoundIter(&BSol, &lpInit);
   sort(BSol.solution.begin(), BSol.solution.end());
   cout << "BRANCH AND BOUND SUMMARY" << endl;
   cout << "|V|=" << G.sizeV << ", |E|=" << G.sizeE << endl;
@@ -207,23 +219,13 @@ void branchAndBound(Graph G, string instName, double cutoff) {
   cout << "numVertices = " << BSol.solution.size() << endl;
   cout << "isVC = " << G.isVC(BSol.solution) << endl;
 
-  // Output solution info
-  sol.open(solFName.c_str());
-  sol << BSol.solution.size() << endl;
-  if (BSol.solution.size() > 0) {
-    for (int i=0; i<BSol.solution.size()-1; i++) {
-      sol << BSol.solution[i] << ",";
-    }
-    sol << BSol.solution[BSol.solution.size()-1];
-  }
-  sol.close();
 
 }
 
 // // Simple tests
 // int main() {
-//   Graph g = parseGraph("../input/jazz.graph");
-//   branchAndBound(g, "jazz", 1);
+//   Graph g = parseGraph("../input/football.graph");
+//   branchAndBound(g, "football", 1);
 //   return 1;
 // }
 

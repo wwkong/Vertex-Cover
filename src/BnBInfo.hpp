@@ -20,6 +20,7 @@ class BnBInfo {
 public:
   bool debug;
   double time; // in seconds
+  double cutoff;
   string instName;
   int sizeV;
   int sizeE;
@@ -37,7 +38,7 @@ public:
   // Constructors
   BnBInfo();
   // Optimality
-  bool isOptimal(double);
+  bool isOptimal();
   // Branching
   bool inclVertex(GRBModel*); // Should we include the last vertex in 'candidates'?
   bool exclVertex(GRBModel*); // Should we exclude the last vertex in 'candidates'
@@ -55,11 +56,11 @@ BnBInfo::BnBInfo() {
 }
 
 // Optimality
-bool BnBInfo::isOptimal(double cutoff) {
+bool BnBInfo::isOptimal() {
 
   stringstream ss, fss;
-  ofstream trace;
-  string traceFName;
+  ofstream sol, trace;
+  string solFName, traceFName;
   if (edgeSet.empty() && vertexSet.size() < solution.size()) {
 
     // Update and add to the trace log
@@ -73,11 +74,24 @@ bool BnBInfo::isOptimal(double cutoff) {
     // Output
     fss << instName << "_BnB_" << cutoff;
     traceFName = fss.str()+".trace";
+    solFName = fss.str()+".sol";
     fss.str(string());
+    // Output trace info
     trace.open(traceFName.c_str(), ios_base::app);
     trace << fixed << setprecision(2) << solution.size() << " " << time << endl;
     trace.close();
-
+    // Output solution info
+    sort(solution.begin(), solution.end());
+    sol.open(solFName.c_str());
+    sol << solution.size() << endl;
+    if (solution.size() > 0) {
+      for (int i=0; i<solution.size()-1; i++) {
+        sol << solution[i] << ",";
+      }
+      sol << solution[solution.size()-1];
+    }
+    sol.close();
+    // Go up a level
     return true;
   } else {
     return false;
@@ -87,21 +101,7 @@ bool BnBInfo::isOptimal(double cutoff) {
 // ------------------ Branching (LEFT) ------------------
 bool BnBInfo::inclVertex(GRBModel *MPtr) {
 
-  // Grab the basis info
-  int nVars = MPtr->get(GRB_IntAttr_NumVars);
-  int nConstrs = MPtr->get(GRB_IntAttr_NumConstrs);
-  vector<int> VBases (nVars);
-  vector<int> CBases (nConstrs);
-  MPtr->optimize();
-  GRBConstr* MConstrs = MPtr->getConstrs();
-  GRBVar* MVars = MPtr->getVars();
-  for (int i=0; i<nVars; i++) {
-    VBases[i] = MVars[i].get(GRB_IntAttr_VBasis);
-  }
-  for (int i=0; i<nConstrs; i++) {
-    CBases[i] = MConstrs[i].get(GRB_IntAttr_CBasis);
-  }
-
+  // *** Note *** Removed warm start due to high memory consumption
   // <--- Start new Gurobi model to get lower bound --->
   int vSplit = candidates.back();
   stringstream ss;
@@ -111,18 +111,6 @@ bool BnBInfo::inclVertex(GRBModel *MPtr) {
   ss.str(string());
   // MPtr->getEnv().set(GRB_IntParam_OutputFlag, true);
   MPtr->update();
-  MConstrs = MPtr->getConstrs();
-  MVars = MPtr->getVars();
-  for (int i=0; i<nVars; i++) {
-    MVars[i].set(GRB_IntAttr_VBasis, VBases[i]);
-  }
-  for (int i=0; i<nConstrs+1; i++) {
-    if (i<nConstrs) {
-      MConstrs[i].set(GRB_IntAttr_CBasis, CBases[i]);
-    } else {
-      MConstrs[i].set(GRB_IntAttr_CBasis, 0);
-    }
-  }
   MPtr->optimize();
   // <--- End New Gurobi Model --->
 
