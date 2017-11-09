@@ -220,11 +220,11 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
 }
 
-// Simple tests
-int main() {
-  Graph g = parseGraph("../input/jazz.graph");
-  branchAndBound(g, "jazz", 1);
-  return 1;
-}
+// // Simple tests
+// int main() {
+//   Graph g = parseGraph("../input/jazz.graph");
+//   branchAndBound(g, "jazz", 1);
+//   return 1;
+// }
 
 #endif
