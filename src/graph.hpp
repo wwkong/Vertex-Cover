@@ -1,13 +1,13 @@
-/* CSE6140 Project - Simple Graph Classes */
+/* CSE 6140 Project - Simple Graph Classes */
+
+#ifndef GRAPH_H
+#define GRAPH_H
 
 #include <algorithm> // remove(vector)
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
 using namespace std;
-
-#ifndef GRAPH_H
-#define GRAPH_H
 
 /* =============================== */
 /* --- Simple graph structures --- */
@@ -46,6 +46,7 @@ public:
   // Utility
   void printAdjacencyList();
   void printAdjacent(int);
+  bool isVC(vector<int>);
 };
 
 // Constructors
@@ -146,7 +147,6 @@ vector<int> Graph::getVertices() {
   return vSet;
 }
 
-
 // Utility
 void Edge::print() {
   cout << "start=" << start << ", end="<< end << endl;;
@@ -168,4 +168,20 @@ void Graph::printAdjacent(int start) {
   }
   cout << endl;
 }
+// Check if a set of vertices is a vertex cover
+bool Graph::isVC(vector<int> vSet) {
+  vector<Edge> eSet = getEdges();
+  vector<bool> vBoolArr(sizeV+1, false);
+  for (int i=0; i<vSet.size(); i++) {
+    vBoolArr[vSet[i]] = true;
+  }
+  Edge e;
+  for (int j=0; j<eSet.size(); j++) {
+    e = eSet[j];
+    if ((vBoolArr[e.start] == false) && (vBoolArr[e.end] == false))
+      return false;
+  }
+  return true;
+}
+
 #endif

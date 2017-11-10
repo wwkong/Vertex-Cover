@@ -1,4 +1,4 @@
-/* CSE6140 Project - Main executable */
+/* CSE 6140 Project - Main executable */
 
 #include <cstring>
 #include <string>
@@ -9,7 +9,10 @@
 #include <getopt.h>
 #include <math.h>
 #include <iomanip> // setprecision
-#include "global.hpp"
+#include "graph.hpp"
+#include "parseGraph.cpp"
+#include "branchAndBound.cpp"
+
 using namespace std;
 
 int main (int argc, char **argv) {
@@ -84,6 +87,9 @@ int main (int argc, char **argv) {
   // Parse the inputs
   // -----------------------------
   Graph g = parseGraph(fileName);
+  unsigned first = fileName.find_last_of("/");
+  unsigned last = fileName.find(".graph");
+  string instName = fileName.substr (first+1,last-first-1);
 
   // -----------------------------
   // Algorithms
@@ -92,13 +98,17 @@ int main (int argc, char **argv) {
   timespec startTime, endTime;
   clock_gettime(CLOCK_REALTIME, &startTime);
   if (strcmp(algName.c_str(),"BnB") == 0) {
-    // Do something
+    branchAndBound(g, instName, cutoff);
+
   } else if (strcmp(algName.c_str(),"Approx") == 0) {
     // Do something
+
   } else if (strcmp(algName.c_str(),"LS1") == 0) {
     // Do something
+
   } else if (strcmp(algName.c_str(),"LS2") == 0) {
     // Do something
+
   } else {
     fprintf (stderr, "Algorithm %s is invalid! You must choose one of [BNB|Approx|LS1|LS2]. \n", optarg);
     return 1;
@@ -107,22 +117,5 @@ int main (int argc, char **argv) {
   double sStart = startTime.tv_sec*1000.0;
   double sEnd = endTime.tv_sec*1000.0;
   double totalTime = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
-  // Note: totalTime is in seconds
-
-  // Output some finalized diagnostics
-  string outFileName;
-  ofstream output;
-  unsigned first = fileName.find_last_of("/");
-  unsigned last = fileName.find(".graph");
-  string instName = fileName.substr (first+1,last-first-1);
-  ostringstream tmp1, tmp2;
-  // Main streams
-  tmp1 << floor(cutoff);
-  tmp2 << seed;
-  outFileName = instName+"_"+"algName"+"_"+tmp1.str()+"_"+tmp2.str()+".last";
-  cout << "Outputting diagnostics to: "<< outFileName << endl;
-  output.open(outFileName.c_str());
-  output << fixed << setprecision(6) << totalTime << " " << finalQuality << endl;
-  output.close();
 
 }
