@@ -247,7 +247,7 @@ void branchAndBound(Graph G, string instName, double cutoff) {
   BSol.printSolution();
   cout << "numVertices = " << BSol.solution.size() << endl;
   cout << "isVC = " << G.isVC(BSol.solution) << endl;
-
+  cout << "Total time = " << BSol.time << " seconds"<< endl;
 
 }
 

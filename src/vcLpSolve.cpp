@@ -63,12 +63,7 @@ GRBModel vcLpSolve(Graph G, bool printFlag) {
     // Optimize, print, and return
     model.getEnv().set(GRB_IntParam_OutputFlag, printFlag);
     model.update();
-    // Pre-solve aggressively
-    model.set(GRB_IntParam_Presolve, 2);
-    model.presolve();
     model.optimize();
-    // Reset attrtibutes
-    model.set(GRB_IntParam_Presolve, -1);
     return model;
   }
   // Catch errors
@@ -84,8 +79,8 @@ GRBModel vcLpSolve(Graph G, bool printFlag) {
 
 // // Simple tests
 // int main(int argc, char *argv[]) {
-//   Graph g = parseGraph("../input/jazz.graph");
-//   GRBModel vcModel = vcLpSolve(g, false);
+//   Graph g = parseGraph("../input/star.graph");
+//   GRBModel vcModel = vcLpSolve(g, true);
 //   cout << "ObjVal: " << vcModel.get(GRB_DoubleAttr_ObjVal) << endl;
 //   return 0;
 // }
