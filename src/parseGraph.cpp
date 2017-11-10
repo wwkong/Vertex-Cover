@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <stdlib.h>
 #include "graph.hpp"
+#include "graph.cpp"
 #include "parseGraph.hpp"
 
 using namespace std;

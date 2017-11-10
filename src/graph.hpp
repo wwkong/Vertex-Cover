@@ -49,6 +49,4 @@ public:
   bool isVC(vector<int>);
 };
 
-
-
 #endif

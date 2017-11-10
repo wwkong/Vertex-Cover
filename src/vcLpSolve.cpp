@@ -63,7 +63,12 @@ GRBModel vcLpSolve(Graph G, bool printFlag) {
     // Optimize, print, and return
     model.getEnv().set(GRB_IntParam_OutputFlag, printFlag);
     model.update();
+    // Pre-solve aggressively
+    model.set(GRB_IntParam_Presolve, 2);
+    model.presolve();
     model.optimize();
+    // Reset attrtibutes
+    model.set(GRB_IntParam_Presolve, -1);
     return model;
   }
   // Catch errors
