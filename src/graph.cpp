@@ -1,53 +1,4 @@
-/* CSE 6140 Project - Simple Graph Classes */
-
-#ifndef GRAPH_H
-#define GRAPH_H
-
-#include <algorithm> // remove(vector)
-#include <iostream>
-#include <vector>
-#include <stdlib.h>
-using namespace std;
-
-/* =============================== */
-/* --- Simple graph structures --- */
-/* =============================== */
-
-// We will assume 1-Indexing
-class Edge {
-public:
-  int start, end;
-  // Constructors
-  Edge();
-  Edge(int, int);
-  // Utility
-  void print();
-};
-class Graph {
-  vector< vector<int> > adjacencyList;
-public:
-  // Number of nodes = V and number of edges = E
-  int sizeV, sizeE;
-  // Constructors
-  Graph();
-  Graph(int);
-  Graph(int,int);
-  // Set
-  void addEdge(int, int);
-  void addEdge(Edge);
-  void addEdges(int, vector<int>);
-  void addEdges(vector<Edge>);
-  void rmVertex(int);
-  // Get
-  vector< vector<int> > getAdjacencyList();
-  vector<int> getAdjacent(int);
-  vector<Edge> getEdges();
-  vector<int> getVertices();
-  // Utility
-  void printAdjacencyList();
-  void printAdjacent(int);
-  bool isVC(vector<int>);
-};
+#include "graph.hpp"
 
 // Constructors
 Edge::Edge() {
@@ -104,7 +55,6 @@ void Graph::addEdges(vector<Edge> es) {
 void Graph::rmVertex(int vertex) {
   vector<int> neighbours = adjacencyList[vertex];
   sizeE -= adjacencyList[vertex].size()-1;
-  sizeV -= 1;
   adjacencyList[vertex].clear();
   for (int i = 0; i<neighbours.size(); i++) {
     for (int j = 0; j<adjacencyList[i].size(); j++) {
@@ -131,21 +81,6 @@ vector<Edge> Graph::getEdges() {
   }
   return eSet;
 }
-vector<int> Graph::getVertices() {
-  int v;
-  vector<int> vSet;
-  vector<bool> vCheck(sizeV+1,false);
-  for(int i=0; i<adjacencyList.size(); i++) {
-    for (int j=0; j<adjacencyList[i].size(); j++) {
-      v = adjacencyList[i][j];
-      if (!vCheck[v]) {
-        vCheck[v] = true;
-        vSet.push_back(v);
-      }
-    }
-  }
-  return vSet;
-}
 
 // Utility
 void Edge::print() {
@@ -168,20 +103,4 @@ void Graph::printAdjacent(int start) {
   }
   cout << endl;
 }
-// Check if a set of vertices is a vertex cover
-bool Graph::isVC(vector<int> vSet) {
-  vector<Edge> eSet = getEdges();
-  vector<bool> vBoolArr(sizeV+1, false);
-  for (int i=0; i<vSet.size(); i++) {
-    vBoolArr[vSet[i]] = true;
-  }
-  Edge e;
-  for (int j=0; j<eSet.size(); j++) {
-    e = eSet[j];
-    if ((vBoolArr[e.start] == false) && (vBoolArr[e.end] == false))
-      return false;
-  }
-  return true;
-}
 
-#endif

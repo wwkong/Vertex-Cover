@@ -8,8 +8,10 @@
 #include <fstream>
 #include <cstring>
 #include <sstream>
-#include "stdlib.h"
+#include <stdexcept>
+#include <stdlib.h>
 #include "graph.hpp"
+#include "parseGraph.hpp"
 
 using namespace std;
 
