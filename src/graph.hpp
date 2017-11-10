@@ -45,6 +45,7 @@ public:
   // Utility
   void printAdjacencyList();
   void printAdjacent(int);
+  bool isVC(vector<int>);
 };
 
 #endif

@@ -95,6 +95,7 @@ void Graph::printAdjacencyList() {
     cout << endl;
   }
 }
+
 void Graph::printAdjacent(int start) {
   vector<int> adjNodes = getAdjacent(start);
   cout << start << " -> ";
@@ -102,5 +103,20 @@ void Graph::printAdjacent(int start) {
     cout << adjNodes[j] << " ";
   }
   cout << endl;
+}
+
+bool Graph::isVC(vector<int> vSet) {
+    vector<Edge> eSet = getEdges();
+    vector<bool> vBoolArr(sizeV+1, false);
+    for (int i=0; i<vSet.size(); i++) {
+        vBoolArr[vSet[i]] = true;
+    }
+    Edge e;
+    for (int j=0; j<eSet.size(); j++) {
+        e = eSet[j];
+        if ((vBoolArr[e.start] == false) && (vBoolArr[e.end] == false))
+            return false;
+    }
+    return true;
 }
 
