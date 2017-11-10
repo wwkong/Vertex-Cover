@@ -8,11 +8,13 @@
 #include <cstdlib>
 #include <getopt.h>
 #include <math.h>
+#include <time.h>
 #include <iomanip> // setprecision
+#include <fstream>
+#include <sstream>
 #include "graph.hpp"
-#include "parseGraph.cpp"
-#include "branchAndBound.cpp"
-
+#include "parseGraph.hpp"
+#include "approx.hpp"
 using namespace std;
 
 int main (int argc, char **argv) {
@@ -102,7 +104,7 @@ int main (int argc, char **argv) {
 
   } else if (strcmp(algName.c_str(),"Approx") == 0) {
     // Do something
-
+    approx(g);
   } else if (strcmp(algName.c_str(),"LS1") == 0) {
     // Do something
 
