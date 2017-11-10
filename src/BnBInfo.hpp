@@ -171,7 +171,7 @@ bool BnBInfo::inclVertex(GRBModel *MPtr) {
       return false;
     }
     // Lower bound exceeds current solution
-    else if (ceil(MPtr->get(GRB_DoubleAttr_ObjVal)) > solution.size()){
+    else if (ceil(MPtr->get(GRB_DoubleAttr_ObjVal)) >= solution.size()){
       if (debug) {
         cout << "Failed to add vertex " << vSplit << "..." << endl;
         cout << "Left LB = " << ceil(MPtr->get(GRB_DoubleAttr_ObjVal));
@@ -247,7 +247,7 @@ bool BnBInfo::exclVertex(GRBModel *MPtr) {
       return false;
     }
     // Lower bound exceeds current solution
-    else if (ceil(MPtr->get(GRB_DoubleAttr_ObjVal)) > solution.size()){
+    else if (ceil(MPtr->get(GRB_DoubleAttr_ObjVal)) >= solution.size()){
       if (debug) {
         cout << "Failed to remove vertex " << vSplit << "..." << endl;
         cout << "Right LB = " << ceil(MPtr->get(GRB_DoubleAttr_ObjVal));
