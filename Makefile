@@ -21,8 +21,8 @@ parseGraph:
 	clang++ -Idir ./src/exec.cpp -o ./bin/exec
 	clang++ -Idir ./src/parseGraph.cpp -o ./bin/$@ $<
 vcLpSolve:
-branchAndBound:
 	clang++ $(CARGS) -Idir ./src/vcLpSolve.cpp -o ./bin/$@ $< $(INC) $(CPPLIB) -lm
+branchAndBound:
 	clang++ $(CARGS) -Idir ./src/branchAndBound.cpp -o ./bin/$@ $< $(INC) $(CPPLIB) -lm
 
 dir:
