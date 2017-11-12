@@ -51,8 +51,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
   B->time += diffSec;
-  if (B->time >= B->cutoff*60) {
-    B->time = B->cutoff*60;
+  if (B->time >= B->cutoff) {
+    B->time = B->cutoff;
     return;
   }
 
@@ -90,8 +90,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
   B->time += diffSec;
-  if (B->time >= B->cutoff*60) {
-    B->time = B->cutoff*60;
+  if (B->time >= B->cutoff) {
+    B->time = B->cutoff;
     return;
   }
 
@@ -115,8 +115,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   }
 
   // Check our runtime
-  if (B->time >= B->cutoff*60) {
-    B->time = B->cutoff*60;
+  if (B->time >= B->cutoff) {
+    B->time = B->cutoff;
     return;
   }
 
@@ -147,8 +147,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
   B->time += diffSec;
-  if (B->time >= B->cutoff*60) {
-    B->time = B->cutoff*60;
+  if (B->time >= B->cutoff) {
+    B->time = B->cutoff;
     return;
   }
 
@@ -173,8 +173,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   }
 
   // Check our runtime
-  if (B->time >= B->cutoff*60) {
-    B->time = B->cutoff*60;
+  if (B->time >= B->cutoff) {
+    B->time = B->cutoff;
     return;
   }
 
