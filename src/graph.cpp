@@ -55,6 +55,7 @@ void Graph::addEdges(vector<Edge> es) {
 void Graph::rmVertex(int vertex) {
   vector<int> neighbours = adjacencyList[vertex];
   sizeE -= adjacencyList[vertex].size()-1;
+  sizeV -= 1;
   adjacencyList[vertex].clear();
   for (int i = 0; i<neighbours.size(); i++) {
     for (int j = 0; j<adjacencyList[i].size(); j++) {
@@ -81,6 +82,21 @@ vector<Edge> Graph::getEdges() {
   }
   return eSet;
 }
+vector<int> Graph::getVertices() {
+  int v;
+  vector<int> vSet;
+  vector<bool> vCheck(sizeV+1,false);
+  for(int i=0; i<adjacencyList.size(); i++) {
+    for (int j=0; j<adjacencyList[i].size(); j++) {
+      v = adjacencyList[i][j];
+      if (!vCheck[v]) {
+        vCheck[v] = true;
+        vSet.push_back(v);
+      }
+    }
+  }
+  return vSet;
+}
 
 // Utility
 void Edge::print() {
@@ -104,7 +120,8 @@ void Graph::printAdjacent(int start) {
   }
   cout << endl;
 }
-
+<<<<<<< HEAD
+// Check if a set of vertices is a vertex cover
 bool Graph::isVC(vector<int> vSet) {
     vector<Edge> eSet = getEdges();
     vector<bool> vBoolArr(sizeV+1, false);
@@ -119,4 +136,3 @@ bool Graph::isVC(vector<int> vSet) {
     }
     return true;
 }
-

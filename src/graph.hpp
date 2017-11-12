@@ -1,7 +1,11 @@
-/* CSE6140 Project - Simple Graph Classes */
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 57337a755c473bc725452695aeddf0dc5c3f029c
+/* CSE 6140 Project - Simple Graph Classes */
+
 #ifndef GRAPH_H
 #define GRAPH_H
-
 
 #include <algorithm> // remove(vector)
 #include <iostream>
@@ -24,8 +28,8 @@ public:
   void print();
 };
 class Graph {
-  vector< vector<int> > adjacencyList;
 public:
+  vector< vector<int> > adjacencyList;
   // Number of nodes = V and number of edges = E
   int sizeV, sizeE;
   // Constructors
@@ -42,6 +46,7 @@ public:
   vector< vector<int> > getAdjacencyList();
   vector<int> getAdjacent(int);
   vector<Edge> getEdges();
+  vector<int> getVertices();
   // Utility
   void printAdjacencyList();
   void printAdjacent(int);

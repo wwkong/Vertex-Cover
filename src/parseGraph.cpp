@@ -1,4 +1,8 @@
-/* CSE6140 Project - Input parser */
+/* CSE 6140 Project - Input parser */
+
+#ifndef PARSEGRAPH_H
+#define PARSEGRAPH_H
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -7,6 +11,7 @@
 #include <stdexcept>
 #include <stdlib.h>
 #include "graph.hpp"
+#include "graph.cpp"
 #include "parseGraph.hpp"
 
 using namespace std;
@@ -39,13 +44,8 @@ Graph parseGraph(string graphFile) {
       }
       eNum++;
       vNum++;
-      try {
-        if (eNum > E) {
-          throw out_of_range("EXCEPTION: more edges in input file than specified!");
-        }
-      } catch (const out_of_range &oor){
-        cerr << oor.what() << endl;
-        exit(1);
+      if (eNum > E) {
+        cout << "WARNING: more edges in input file than specified!" << endl;
       }
     }
     fHook.close();
@@ -71,5 +71,11 @@ Graph parseGraph(string graphFile) {
 //     eSet[k].print();
 //   }
 //   cout << "nEdges = " << g.sizeE << ", nESet=" << eSet.size() << endl;
+//   vector<int> vSet = g.getVertices();
+//   for (int k=0; k<vSet.size(); k++) {
+//     cout << vSet[k] << endl;
+//   }
 //   return 1;
 // }
+
+#endif

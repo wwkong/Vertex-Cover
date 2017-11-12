@@ -1,56 +1,88 @@
 /* CSE 6140 - LP Formulation for Vertex Cover */
 
+#ifndef VCLP_H
+#define VCLP_H
+
 /* Chosen method is Gurobi */
 #include <stdio.h>
+#include <sstream>
+#include <math.h>
+#include <unistd.h>
 #include "gurobi_c++.h"
+#include "graph.hpp"
+#include "parseGraph.cpp"
 using namespace std;
 
-int
-main(int   argc,
-     char *argv[])
-{
+// Given a graph G, solve the LP relaxation of the Vertex Cover problem
+GRBModel vcLpSolve(Graph G, bool printFlag) {
+  // Grab the needed info
+  vector<Edge> edges = G.getEdges();
+  vector<int> vertices = G.getVertices();
+  int sizeE = edges.size();
+  int sizeV = vertices.size();
+  // Set up the model variables
+  stringstream vName, sName, tName;
+  vector<double> costs(sizeV,1.0);
+  vector<string> varNames(sizeV);
+  vector<char> types(sizeV);
+  for (int i=0; i<sizeV; i++) {
+    vName << vertices[i];
+    varNames[i] = "v" + vName.str();
+    types[i] = GRB_CONTINUOUS;
+    vName.str(string());
+    vName.clear();
+  }
+  // Supress stdout
+  int o = dup(fileno(stdout));
+  freopen ("/dev/null", "w", stdout);
+  GRBEnv *env = new GRBEnv();
+  dup2(o,fileno(stdout));
+  close(o);
+  // Re-open stdout
+  GRBModel model = GRBModel(*env);
   try {
-    GRBEnv env = GRBEnv();
-
-    GRBModel model = GRBModel(env);
-
-    // Create variables
-
-    GRBVar x = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "x");
-    GRBVar y = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "y");
-    GRBVar z = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "z");
-
-    // Set objective: maximize x + y + 2 z
-
-    model.setObjective(x + y + 2 * z, GRB_MAXIMIZE);
-
-    // Add constraint: x + 2 y + 3 z <= 4
-
-    model.addConstr(x + 2 * y + 3 * z <= 4, "c0");
-
-    // Add constraint: x + y >= 1
-
-    model.addConstr(x + y >= 1, "c1");
-
-    // Optimize model
-
+    model.set(GRB_IntAttr_ModelSense, GRB_MINIMIZE);
+    GRBVar *vars = model.addVars(NULL, NULL, &costs[0], &types[0], &varNames[0], sizeV);
+    model.update();
+    // Add constraints
+    int s, t;
+    GRBVar sVar, tVar;
+    for (int j=0; j<edges.size(); j++) {
+      s = min(edges[j].start, edges[j].end);
+      t = max(edges[j].start, edges[j].end);
+      sName << s;
+      tName << t;
+      sVar = model.getVarByName("v"+sName.str());
+      tVar = model.getVarByName("v"+tName.str());
+      model.addConstr(sVar + tVar >= 1, "e_"+sName.str()+"_"+tName.str());
+      sName.str(string());
+      sName.clear();
+      tName.str(string());
+      tName.clear();
+    }
+    // Optimize, print, and return
+    model.getEnv().set(GRB_IntParam_OutputFlag, printFlag);
+    model.update();
     model.optimize();
-
-    cout << x.get(GRB_StringAttr_VarName) << " "
-         << x.get(GRB_DoubleAttr_X) << endl;
-    cout << y.get(GRB_StringAttr_VarName) << " "
-         << y.get(GRB_DoubleAttr_X) << endl;
-    cout << z.get(GRB_StringAttr_VarName) << " "
-         << z.get(GRB_DoubleAttr_X) << endl;
-
-    cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
-
-  } catch(GRBException e) {
+    return model;
+  }
+  // Catch errors
+    catch(GRBException e) {
     cout << "Error code = " << e.getErrorCode() << endl;
     cout << e.getMessage() << endl;
   } catch(...) {
     cout << "Exception during optimization" << endl;
   }
-
-  return 0;
+  delete env;
+  return model;
 }
+
+// // Simple tests
+// int main(int argc, char *argv[]) {
+//   Graph g = parseGraph("../input/star.graph");
+//   GRBModel vcModel = vcLpSolve(g, true);
+//   cout << "ObjVal: " << vcModel.get(GRB_DoubleAttr_ObjVal) << endl;
+//   return 0;
+// }
+
+#endif

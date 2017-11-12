@@ -1,0 +1,1 @@
+./exec -inst ../input/karate.graph -alg BnB -time 1 -seed 777
