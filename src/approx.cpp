@@ -12,17 +12,20 @@ int approx(Graph &graph){
     while(!S.empty()){
         int curV = S.top();
         S.pop();
-        vector <int> incidentVs = graph.getAdjacent(curV);
-        int childsNum = 0;
-        for(const auto it: incidentVs){
-            if(!visited[it]){
-                S.push(it);
-                visited[it] = true;
-                ++childsNum;
+        if(!visited[curV]){
+            visited[curV]=true;
+
+            vector <int> incidentVs = graph.getAdjacent(curV);
+            int childsNum = 0;
+            for(const auto it: incidentVs){
+                if(!visited[it]){
+                    S.push(it);
+                    ++childsNum;
+                }
             }
-        }
-        if(childsNum>1){
-            solution.push_back(curV);
+            if(childsNum>0){
+                solution.push_back(curV);
+            }
         }
     }
     cout<<endl;
@@ -31,5 +34,8 @@ int approx(Graph &graph){
         cout<< it <<",";
     }
     cout<<endl;
+    if(graph.isVC(solution)){
+        cout<<"yes!"<<endl;
+    }
     return 0;
 }

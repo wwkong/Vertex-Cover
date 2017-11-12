@@ -111,6 +111,7 @@ void Graph::printAdjacencyList() {
     cout << endl;
   }
 }
+
 void Graph::printAdjacent(int start) {
   vector<int> adjNodes = getAdjacent(start);
   cout << start << " -> ";
