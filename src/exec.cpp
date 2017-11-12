@@ -105,7 +105,7 @@ int main (int argc, char **argv) {
 
   } else if (strcmp(algName.c_str(),"Approx") == 0) {
     // Do something
-    approx(g);
+    approx(g, );
   } else if (strcmp(algName.c_str(),"LS1") == 0) {
     // Do something
 

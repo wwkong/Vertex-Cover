@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* CSE 6140 Project - Simple Graph Classes */
 
 #ifndef GRAPH_H
