@@ -1,2 +1,0 @@
--------- SOLUTION FROM BRANCH AND BOUND SOLVER --------
-
