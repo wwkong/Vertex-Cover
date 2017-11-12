@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 57337a755c473bc725452695aeddf0dc5c3f029c
 /* CSE 6140 Project - Simple Graph Classes */
 
 #ifndef GRAPH_H

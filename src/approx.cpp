@@ -23,7 +23,6 @@ int approx(Graph &graph, string &instName, double cutoff){
         S.pop();
         if(!visited[curV]){
             visited[curV]=true;
-
             vector <int> incidentVs = graph.getAdjacent(curV);
             int childsNum = 0;
             for(const auto it: incidentVs){
@@ -38,14 +37,8 @@ int approx(Graph &graph, string &instName, double cutoff){
         }
     }
     double real_time = get_time() - start_time;
-    cout<<endl;
-    cout<< solution.size()<<endl;
-    for(const auto it: solution){
-        cout<< it <<",";
-    }
-    cout<<endl;
     if(graph.isVC(solution)){
-        cout<<"yes!"<<endl;
+        cout<<"Find a VC!"<<endl;
     }
 
     ofstream solution_file;
@@ -54,9 +47,9 @@ int approx(Graph &graph, string &instName, double cutoff){
     string solution_file_name;
     solution_file_name = string_stream.str();
     solution_file.open(solution_file_name);
-    solution_file<< solution.size()<<endl;
+    solution_file << to_string(solution.size()) << endl;
     for(const auto it: solution){
-        solution_file << it ;
+        solution_file << it;
         if(it != solution.back())
             solution_file << ",";
     }

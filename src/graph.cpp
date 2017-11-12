@@ -120,7 +120,6 @@ void Graph::printAdjacent(int start) {
   }
   cout << endl;
 }
-<<<<<<< HEAD
 // Check if a set of vertices is a vertex cover
 bool Graph::isVC(vector<int> vSet) {
     vector<Edge> eSet = getEdges();

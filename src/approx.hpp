@@ -8,6 +8,6 @@
 #include <sstream>
 
 
-int approx(Graph &graph);
+int approx(Graph &graph, string &inst_name, double cutoff);
 
 #endif
