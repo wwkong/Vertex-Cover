@@ -111,7 +111,7 @@ double BnBInfo::getInclLB(GRBModel *MPtr) {
   MPtr->optimize();
   // <--- End New Gurobi Model --->
   // Infeasible case
-  double objVal;
+  double objVal = 0;
   if (MPtr->get(GRB_IntAttr_Status) == 3) {
     objVal = solution.size()+1;
   }
@@ -133,7 +133,7 @@ double BnBInfo::getExclLB(GRBModel *MPtr) {
   MPtr->optimize();
   // <--- End New Gurobi Model --->
   // Infeasible case
-  double objVal;
+  double objVal = 0;
   if (MPtr->get(GRB_IntAttr_Status) == 3) {
     objVal = solution.size()+1;
   }
@@ -148,7 +148,7 @@ double BnBInfo::getExclLB(GRBModel *MPtr) {
 // ------------------ Branching (LEFT) ------------------
 bool BnBInfo::inclVertex(GRBModel *MPtr) {
 
-  // try {
+  try {
     // *** Note *** Removed warm start due to high memory consumption
     // <--- Start new Gurobi model to get lower bound --->
     int vSplit = candidates.back();
@@ -209,22 +209,22 @@ bool BnBInfo::inclVertex(GRBModel *MPtr) {
       prevEdgesNum.push_back(pEdgesN);
       return true;
     }
-  // }
-  // // Catch errors
-  // catch(GRBException e) {
-  //   cout << "Error code = " << e.getErrorCode() << endl;
-  //   cout << e.getMessage() << endl;
-  // } catch(...) {
-  //   cout << "Exception during optimization" << endl;
-  // }
-  // return false;
+  }
+  // Catch errors
+  catch(GRBException e) {
+    cout << "Error code = " << e.getErrorCode() << endl;
+    cout << e.getMessage() << endl;
+  } catch(...) {
+    cout << "Exception during optimization" << endl;
+  }
+  return false;
 
 }
 
 // ------------------ Branching (RIGHT) ------------------
 bool BnBInfo::exclVertex(GRBModel *MPtr) {
 
-  // try {
+  try {
     // *** Note *** Removed the warm start since the presolver is usually faster
     // <--- Start new Gurobi model to get lower bound --->
     int vSplit = candidates.back();
@@ -266,15 +266,15 @@ bool BnBInfo::exclVertex(GRBModel *MPtr) {
       prevEdgesNum.push_back(0);
       return true;
     }
-  // }
-  // // Catch errors
-  // catch(GRBException e) {
-  //   cout << "Error code = " << e.getErrorCode() << endl;
-  //   cout << e.getMessage() << endl;
-  // } catch(...) {
-  //   cout << "Exception during optimization" << endl;
-  // }
-  // return false;
+  }
+  // Catch errors
+  catch(GRBException e) {
+    cout << "Error code = " << e.getErrorCode() << endl;
+    cout << e.getMessage() << endl;
+  } catch(...) {
+    cout << "Exception during optimization" << endl;
+  }
+  return false;
 
 }
 void BnBInfo::restoreState(GRBModel *MPtr) {
