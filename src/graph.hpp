@@ -24,8 +24,8 @@ public:
   void print();
 };
 class Graph {
-  vector< vector<int> > adjacencyList;
 public:
+  vector< vector<int> > adjacencyList;
   // Number of nodes = V and number of edges = E
   int sizeV, sizeE;
   // Constructors

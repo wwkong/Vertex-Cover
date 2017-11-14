@@ -51,8 +51,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
   B->time += diffSec;
-  if (B->time >= B->cutoff*60) {
-    B->time = B->cutoff*60;
+  if (B->time >= B->cutoff) {
+    B->time = B->cutoff;
     return;
   }
 
@@ -90,8 +90,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
   B->time += diffSec;
-  if (B->time >= B->cutoff*60) {
-    B->time = B->cutoff*60;
+  if (B->time >= B->cutoff) {
+    B->time = B->cutoff;
     return;
   }
 
@@ -115,8 +115,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   }
 
   // Check our runtime
-  if (B->time >= B->cutoff*60) {
-    B->time = B->cutoff*60;
+  if (B->time >= B->cutoff) {
+    B->time = B->cutoff;
     return;
   }
 
@@ -147,8 +147,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   diffSec = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
   clock_gettime(CLOCK_REALTIME, &startTime);
   B->time += diffSec;
-  if (B->time >= B->cutoff*60) {
-    B->time = B->cutoff*60;
+  if (B->time >= B->cutoff) {
+    B->time = B->cutoff;
     return;
   }
 
@@ -173,8 +173,8 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   }
 
   // Check our runtime
-  if (B->time >= B->cutoff*60) {
-    B->time = B->cutoff*60;
+  if (B->time >= B->cutoff) {
+    B->time = B->cutoff;
     return;
   }
 
@@ -247,15 +247,15 @@ void branchAndBound(Graph G, string instName, double cutoff) {
   BSol.printSolution();
   cout << "numVertices = " << BSol.solution.size() << endl;
   cout << "isVC = " << G.isVC(BSol.solution) << endl;
-
+  cout << "Total time = " << BSol.time << " seconds"<< endl;
 
 }
 
-// // Simple tests
-// int main() {
-//   Graph g = parseGraph("../input/football.graph");
-//   branchAndBound(g, "football", 1);
-//   return 1;
-// }
+// Simple tests
+int main() {
+  Graph g = parseGraph("../input/jazz.graph");
+  branchAndBound(g, "jazz", 60);
+  return 1;
+}
 
 #endif
