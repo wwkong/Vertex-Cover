@@ -15,9 +15,9 @@
 #include "graph.hpp"
 #include "graph.cpp"
 #include "parseGraph.cpp"
-#include "approx.cpp"
-#include "approx.hpp"
-//#include "branchAndBound.cpp"
+// #include "approx.cpp"
+// #include "approx.hpp"
+#include "branchAndBound.cpp"
 using namespace std;
 
 int main (int argc, char **argv) {
@@ -102,12 +102,13 @@ int main (int argc, char **argv) {
   int finalQuality = 0;
   timespec startTime, endTime;
   clock_gettime(CLOCK_REALTIME, &startTime);
+
   if (strcmp(algName.c_str(),"BnB") == 0) {
-    //branchAndBound(g, instName, cutoff);
+    branchAndBound(g, instName, cutoff);
 
   } else if (strcmp(algName.c_str(),"Approx") == 0) {
-    // Do something
-    approx(g,instName, cutoff );
+    // approx(g,instName, cutoff );
+
   } else if (strcmp(algName.c_str(),"LS1") == 0) {
     // Do something
 

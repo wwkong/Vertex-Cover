@@ -65,7 +65,7 @@ vector<int> lpApprox(GRBModel* M) { // Get the 2-Approximation using an LP
     for (int i=0; i<n; i++) {
       if (var[i].get(GRB_DoubleAttr_X) > 0.5-0.001) { // Handle precision problems
         varStr = string(var[i].get(GRB_StringAttr_VarName));
-        vert = stoi(varStr.substr(1, varStr.size()-1));
+        vert = atoi(varStr.substr(1, varStr.size()-1).c_str());
         vcVec.push_back(vert);
       }
     }

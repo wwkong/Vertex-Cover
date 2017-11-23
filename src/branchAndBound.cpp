@@ -50,9 +50,9 @@ vector<int> approx2(Graph &graph){ // DFS approx
         ++visited_vertex_num;
         vector <int> incidentVs = graph.adjacencyList[curV];
         int childsNum = 0;
-        for(const auto it: incidentVs){
-          if(!visited[it]){
-            S.push(it);
+        for(int it=0; it<incidentVs.size(); it++){
+          if(!visited[incidentVs[it]]){
+            S.push(incidentVs[it]);
             ++childsNum;
           }
         }
@@ -281,12 +281,12 @@ void branchAndBound(Graph G, string instName, double cutoff) {
   trace.close();
   // Initial solution file
   sol.open(solFName.c_str());
-  sol << verts.size() << endl;
-  if (verts.size() > 0) {
-    for (int i=0; i<verts.size()-1; i++) {
-      sol << verts[i] << ",";
+  sol << vcInit.size() << endl;
+  if (vcInit.size() > 0) {
+    for (int i=0; i<vcInit.size()-1; i++) {
+      sol << vcInit[i] << ",";
     }
-    sol << verts[verts.size()-1];
+    sol << vcInit[vcInit.size()-1];
   }
   sol.close();
 
