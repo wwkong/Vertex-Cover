@@ -122,16 +122,16 @@ void Graph::printAdjacent(int start) {
 }
 // Check if a set of vertices is a vertex cover
 bool Graph::isVC(vector<int> vSet) {
-  vector<Edge> eSet = getEdges();
-  vector<bool> vBoolArr(sizeV+1, false);
-  for (int i=0; i<vSet.size(); i++) {
-    vBoolArr[vSet[i]] = true;
-  }
-  Edge e;
-  for (int j=0; j<eSet.size(); j++) {
-    e = eSet[j];
-    if ((vBoolArr[e.start] == false) && (vBoolArr[e.end] == false))
-      return false;
-  }
-  return true;
+    vector<Edge> eSet = getEdges();
+    vector<bool> vBoolArr(sizeV+1, false);
+    for (int i=0; i<vSet.size(); i++) {
+        vBoolArr[vSet[i]] = true;
+    }
+    Edge e;
+    for (int j=0; j<eSet.size(); j++) {
+        e = eSet[j];
+        if ((vBoolArr[e.start] == false) && (vBoolArr[e.end] == false))
+            return false;
+    }
+    return true;
 }

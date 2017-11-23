@@ -3,15 +3,6 @@
 #ifndef PARSEGRAPH_H
 #define PARSEGRAPH_H
 
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <cstring>
-#include <sstream>
-#include <stdexcept>
-#include <stdlib.h>
-#include "graph.hpp"
-#include "graph.cpp"
 #include "parseGraph.hpp"
 
 using namespace std;

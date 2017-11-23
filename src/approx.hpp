@@ -2,7 +2,13 @@
 #define      APPROX_H
 
 #include "graph.hpp"
+#include <stack>
+#include <fstream>
+#include <sys/time.h>
+#include <sstream>
+#include <iomanip>
 
-int approx(Graph &graph);
+
+int approx(Graph &graph, string &inst_name, double cutoff);
 
 #endif
