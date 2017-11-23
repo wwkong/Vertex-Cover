@@ -1,0 +1,3 @@
+valgrind --tool=massif ./branchAndBound
+ms_print massif.out.29886
+ms_print massif.out.29886 |> massif_BnB.txt

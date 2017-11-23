@@ -24,6 +24,7 @@ public:
   string instName;
   int sizeV;
   int sizeE;
+  Graph G;
   // HISTORY
   vector<int>           prevEdgesNum;
   vector<char>          prevTypes; // '1' = add vertex, '0' = remove vertex
@@ -38,10 +39,11 @@ public:
   // Constructors
   BnBInfo();
   // Optimality
+  void writeInfo();
   bool isOptimal();
   // Branching
-  double getInclLB(GRBModel*); // Lower bound if we include a vertex
-  double getExclLB(GRBModel*); // Lower bound if we exclude a vertex
+  double getInclB(GRBModel*); // Lower bound if we include a vertex
+  double getExclB(GRBModel*); // Lower bound if we exclude a vertex
   bool inclVertex(GRBModel*); // Should we include the last vertex in 'candidates'?
   bool exclVertex(GRBModel*); // Should we exclude the last vertex in 'candidates'
   void restoreState(GRBModel*);  // Revert to a state one level up
@@ -52,17 +54,71 @@ public:
   void printPrevEdgeNum();
 };
 
+// Helper functions
+vector<int> lpApprox(GRBModel* M) { // Get the 2-Approximation using an LP
+  vector<int> vcVec;
+  try {
+    int n = M->get(GRB_IntAttr_NumVars);
+    GRBVar* var = M->getVars();
+    int vert;
+    string varStr;
+    for (int i=0; i<n; i++) {
+      if (var[i].get(GRB_DoubleAttr_X) > 0.5-0.001) { // Handle precision problems
+        varStr = string(var[i].get(GRB_StringAttr_VarName));
+        vert = stoi(varStr.substr(1, varStr.size()-1));
+        vcVec.push_back(vert);
+      }
+    }
+  }
+  // Catch errors
+  catch(GRBException e) {
+    cout << "Error code = " << e.getErrorCode() << endl;
+    cout << e.getMessage() << endl;
+  } catch(...) {
+    cout << "Exception during optimization" << endl;
+  }
+
+  return vcVec;
+}
+
+
 // Constructors
 BnBInfo::BnBInfo() {
   time = 0;
 }
 
 // Optimality
-bool BnBInfo::isOptimal() {
+void BnBInfo::writeInfo() {
 
   stringstream ss, fss;
   ofstream sol, trace;
   string solFName, traceFName;
+  // Output
+  fss << instName << "_BnB_" << cutoff;
+  traceFName = fss.str()+".trace";
+  solFName = fss.str()+".sol";
+  fss.str(string());
+  // Output trace info
+  trace.open(traceFName.c_str(), ios_base::app);
+  trace << fixed << setprecision(2) << time << ", " << solution.size() << endl;
+  trace.close();
+  // Output solution info
+  sort(solution.begin(), solution.end());
+  sol.open(solFName.c_str());
+  sol << solution.size() << endl;
+  if (solution.size() > 0) {
+    for (int i=0; i<solution.size()-1; i++) {
+      sol << solution[i] << ",";
+    }
+    sol << solution[solution.size()-1];
+  }
+  sol.close();
+  return;
+
+}
+
+bool BnBInfo::isOptimal() {
+
   if (edgeSet.empty() && vertexSet.size() < solution.size()) {
 
     // Update and add to the trace log
@@ -72,27 +128,7 @@ bool BnBInfo::isOptimal() {
       cout << "Solution Size = " << solution.size() << endl;
       cout << "Fathom due to OPTIMALITY!" << endl << endl;
     }
-
-    // Output
-    fss << instName << "_BnB_" << cutoff;
-    traceFName = fss.str()+".trace";
-    solFName = fss.str()+".sol";
-    fss.str(string());
-    // Output trace info
-    trace.open(traceFName.c_str(), ios_base::app);
-    trace << fixed << setprecision(2) << time << ", " << solution.size() << endl;
-    trace.close();
-    // Output solution info
-    sort(solution.begin(), solution.end());
-    sol.open(solFName.c_str());
-    sol << solution.size() << endl;
-    if (solution.size() > 0) {
-      for (int i=0; i<solution.size()-1; i++) {
-        sol << solution[i] << ",";
-      }
-      sol << solution[solution.size()-1];
-    }
-    sol.close();
+    writeInfo();
     // Go up a level
     return true;
   } else {
@@ -100,7 +136,8 @@ bool BnBInfo::isOptimal() {
   }
 }
 // Branching
-double BnBInfo::getInclLB(GRBModel *MPtr) {
+double BnBInfo::getInclB(GRBModel *MPtr) {
+
   // <--- Start new Gurobi model to get lower bound --->
   int vSplit = candidates.back();
   stringstream ss;
@@ -110,6 +147,7 @@ double BnBInfo::getInclLB(GRBModel *MPtr) {
   MPtr->update();
   MPtr->optimize();
   // <--- End New Gurobi Model --->
+
   // Infeasible case
   double objVal = 0;
   if (MPtr->get(GRB_IntAttr_Status) == 3) {
@@ -118,11 +156,20 @@ double BnBInfo::getInclLB(GRBModel *MPtr) {
   // Feasible case
   else {
     objVal = MPtr->get(GRB_DoubleAttr_ObjVal);
+    // Update upper bound if possible
+    vector<int> maybeVC = lpApprox(MPtr);
+    if (maybeVC.size()>0 && maybeVC.size() < solution.size()) {
+      if (debug) {
+        cout << "Updating solution through the 2-Approximation..." << endl;
+      }
+      solution = maybeVC;
+      writeInfo();
+    }
   }
   MPtr->remove(MPtr->getConstrByName("dummy"));
   return objVal;
 }
-double BnBInfo::getExclLB(GRBModel *MPtr) {
+double BnBInfo::getExclB(GRBModel *MPtr) {
   // <--- Start new Gurobi model to get lower bound --->
   int vSplit = candidates.back();
   stringstream ss;
@@ -132,6 +179,7 @@ double BnBInfo::getExclLB(GRBModel *MPtr) {
   MPtr->update();
   MPtr->optimize();
   // <--- End New Gurobi Model --->
+
   // Infeasible case
   double objVal = 0;
   if (MPtr->get(GRB_IntAttr_Status) == 3) {
@@ -140,6 +188,15 @@ double BnBInfo::getExclLB(GRBModel *MPtr) {
   // Feasible case
   else {
     objVal = MPtr->get(GRB_DoubleAttr_ObjVal);
+    // Update upper bound if possible
+    vector<int> maybeVC = lpApprox(MPtr);
+    if (maybeVC.size()>0 && maybeVC.size() < solution.size()) {
+      if (debug) {
+        cout << "Updating solution through the 2-Approximation..." << endl;
+      }
+      solution = maybeVC;
+      writeInfo();
+    }
   }
   MPtr->remove(MPtr->getConstrByName("dummy"));
   return objVal;

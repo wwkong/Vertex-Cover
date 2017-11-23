@@ -11,6 +11,7 @@
 #include <fstream>
 #include <math.h>
 #include <algorithm>
+#include <stack>
 #include "gurobi_c++.h"
 #include "graph.hpp"
 #include "BnBInfo.hpp"
@@ -20,6 +21,34 @@ using namespace std;
 // Utility
 bool cmpSize(vector<int> a, vector<int> b) {
   return (a.size() < b.size()); // Larger sizes first
+}
+
+vector<int> approx2(Graph &graph){ // DFS approx
+  vector <int> solution;
+  solution.reserve(graph.sizeV);
+  vector <bool> visited(graph.sizeV+1);
+  stack<int> S;
+  S.push(1);
+  while(!S.empty()){
+    int curV = S.top();
+    S.pop();
+    if(!visited[curV]){
+      visited[curV]=true;
+
+      vector <int> incidentVs = graph.getAdjacent(curV);
+      int childsNum = 0;
+      for(const auto it: incidentVs){
+        if(!visited[it]){
+          S.push(it);
+          ++childsNum;
+        }
+      }
+      if(childsNum>0){
+        solution.push_back(curV);
+      }
+    }
+  }
+  return solution;
 }
 
 // Subroutine / Iterator which performs the branching
@@ -60,10 +89,10 @@ void branchAndBoundIter(BnBInfo *B, GRBModel *M) {
   double inclObjVal = B->solution.size()+1;
   double exclObjVal = B->solution.size()+1;
   if (B->debug) {
-    cout << "Gathering LB data..." << endl;
+    cout << "Gathering bound data..." << endl;
   }
-  inclObjVal = B->getInclLB(M);
-  exclObjVal = B->getExclLB(M);
+  inclObjVal = B->getInclB(M);
+  exclObjVal = B->getExclB(M);
 
   // ====================================
   // First Branch
@@ -194,19 +223,31 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
   // Set up main variables
   ofstream sol, trace;
+  timespec startTime, endTime;
+  double sStart, sEnd, totalTime;
   GRBModel lpInit = vcLpSolve(G, false);
   vector<int> verts = G.getVertices();
   sort(verts.begin(), verts.end());
 
+  // Using a DFS approach, get the initial VC
+  clock_gettime(CLOCK_REALTIME, &startTime);
+  vector<int> vcInit;
+  vcInit = approx2(G);
+  clock_gettime(CLOCK_REALTIME, &endTime);
+  sStart = startTime.tv_sec*1000.0;
+  sEnd = endTime.tv_sec*1000.0;
+  totalTime = ((sEnd + endTime.tv_nsec/1000000.0) - (sStart + startTime.tv_nsec/1000000.0))/1000;
+
   // Initialize trivial components
   BnBInfo BSol;
   BSol.debug = false;
-  BSol.time = 0;
+  BSol.time = totalTime;
   BSol.cutoff = cutoff;
   BSol.sizeV = G.sizeV;
   BSol.sizeE = G.sizeE;
+  BSol.G = G;
   BSol.edgeSet = G.getEdges();
-  BSol.solution = verts;
+  BSol.solution = vcInit;
   BSol.instName = instName;
 
   // Generate filestream info
@@ -218,7 +259,7 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
   // Initialize trace file
   trace.open(traceFName.c_str());
-  trace << fixed << setprecision(2) << "0.00, " << G.sizeV << endl;
+  trace << fixed << setprecision(2) << totalTime << ", " << vcInit.size() << endl;
   trace.close();
   // Initial solution file
   sol.open(solFName.c_str());
@@ -240,6 +281,8 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
   // Call the main iterator
   cout << "-------- SOLUTION FROM BRANCH AND BOUND SOLVER --------" << endl << endl;
+  cout << "INSTANCE NAME" << endl;
+  cout << instName << endl << endl;
   branchAndBoundIter(&BSol, &lpInit);
   sort(BSol.solution.begin(), BSol.solution.end());
   cout << "BRANCH AND BOUND SUMMARY" << endl;
@@ -253,8 +296,8 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
 // Simple tests
 int main() {
-  Graph g = parseGraph("../input/jazz.graph");
-  branchAndBound(g, "jazz", 60);
+  Graph g = parseGraph("../input/netscience.graph");
+  branchAndBound(g, "netscience", 60);
   return 1;
 }
 
