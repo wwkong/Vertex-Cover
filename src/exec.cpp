@@ -13,7 +13,9 @@
 #include <fstream>
 #include <sstream>
 #include "graph.hpp"
-#include "parseGraph.hpp"
+#include "graph.cpp"
+#include "parseGraph.cpp"
+#include "approx.cpp"
 #include "approx.hpp"
 //#include "branchAndBound.cpp"
 using namespace std;

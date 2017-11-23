@@ -1,3 +1,5 @@
+#ifndef GRAPH_C
+#define GRAPH_C
 #include "graph.hpp"
 
 // Constructors
@@ -135,3 +137,5 @@ bool Graph::isVC(vector<int> vSet) {
     }
     return true;
 }
+
+#endif
