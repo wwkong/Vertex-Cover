@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <stdlib.h>
 #include "graph.hpp"
+#include "graph.cpp"
 
 Graph parseGraph(string graphFile);
 

@@ -79,7 +79,7 @@ GRBModel vcLpSolve(Graph G, bool printFlag) {
 
 // // Simple tests
 // int main(int argc, char *argv[]) {
-//   Graph g = parseGraph("../input/star.graph");
+//   Graph g = parseGraph("../input/football.graph");
 //   GRBModel vcModel = vcLpSolve(g, true);
 //   cout << "ObjVal: " << vcModel.get(GRB_DoubleAttr_ObjVal) << endl;
 //   return 0;

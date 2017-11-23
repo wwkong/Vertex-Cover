@@ -27,26 +27,44 @@ vector<int> approx2(Graph &graph){ // DFS approx
   vector <int> solution;
   solution.reserve(graph.sizeV);
   vector <bool> visited(graph.sizeV+1);
+  int visited_vertex_num = 0;
+  int start_vertex = 1;
   stack<int> S;
-  S.push(1);
-  while(!S.empty()){
-    int curV = S.top();
-    S.pop();
-    if(!visited[curV]){
-      visited[curV]=true;
-
-      vector <int> incidentVs = graph.getAdjacent(curV);
-      int childsNum = 0;
-      for(const auto it: incidentVs){
-        if(!visited[it]){
-          S.push(it);
-          ++childsNum;
+  /* Find DFS forest and record leaf nodes for each DFS tree */
+  while(visited_vertex_num < graph.sizeV){
+    for(int i=2; i< graph.sizeV;++i){
+      if(!visited[i]){
+        int adj_vertex_num = graph.adjacencyList[i].size(); 
+        if(adj_vertex_num!=0){
+          start_vertex = i;
+          break;
         }
       }
-      if(childsNum>0){
-        solution.push_back(curV);
+    }
+    S.push(start_vertex);
+    while(!S.empty()){
+      int curV = S.top();
+      S.pop();
+      if(!visited[curV]){
+        visited[curV]=true;
+        ++visited_vertex_num;
+        vector <int> incidentVs = graph.adjacencyList[curV];
+        int childsNum = 0;
+        for(const auto it: incidentVs){
+          if(!visited[it]){
+            S.push(it);
+            ++childsNum;
+          }
+        }
+        if(childsNum>0){
+          solution.push_back(curV);
+        }
       }
     }
+  }
+  /* add the start vertex to the solution if it is not in the solution*/
+  if(solution.front()!=start_vertex){
+    solution.push_back(start_vertex);
   }
   return solution;
 }
@@ -296,8 +314,8 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
 // Simple tests
 int main() {
-  Graph g = parseGraph("../input/netscience.graph");
-  branchAndBound(g, "netscience", 60);
+  Graph g = parseGraph("../input/football.graph");
+  branchAndBound(g, "football", 120);
   return 1;
 }
 
