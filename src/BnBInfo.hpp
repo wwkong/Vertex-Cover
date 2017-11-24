@@ -69,6 +69,7 @@ vector<int> lpApprox(GRBModel* M) { // Get the 2-Approximation using an LP
         vcVec.push_back(vert);
       }
     }
+    delete var;
   }
   // Catch errors
   catch(GRBException e) {
@@ -77,7 +78,6 @@ vector<int> lpApprox(GRBModel* M) { // Get the 2-Approximation using an LP
   } catch(...) {
     cout << "Exception during optimization" << endl;
   }
-
   return vcVec;
 }
 
