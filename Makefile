@@ -8,7 +8,7 @@ CARGS    = -std=c++11 -O2 -m64 -g -D_GLIBCXX_USE_CXX11_ABI=0
 LIB = -lrt
 CPPFLAGS   = -O2 -std=c++11 -m64 -g -D_GLIBCXX_USE_CXX11_ABI=0
 SOURCES_DIR = src
-SOURCES  = graph.cpp parseGraph.cpp approx.cpp exec.cpp 
+SOURCES  = graph.cpp parseGraph.cpp approx.cpp ls2.cpp exec.cpp 
 OBJS_DIR = bin
 OBJS += $(patsubst %.cpp, $(OBJS_DIR)/%.o, $(SOURCES))
 EXEC = exec

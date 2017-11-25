@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iomanip>
 
-
+double get_time();
 int approx(Graph &graph, string &inst_name, double cutoff);
 
 #endif

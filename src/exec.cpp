@@ -15,6 +15,7 @@
 #include "graph.hpp"
 #include "parseGraph.hpp"
 #include "approx.hpp"
+#include "ls2.hpp"
 //#include "branchAndBound.cpp"
 using namespace std;
 
@@ -111,6 +112,7 @@ int main (int argc, char **argv) {
 
   } else if (strcmp(algName.c_str(),"LS2") == 0) {
     // Do something
+    local_search2(g, instName, cutoff, seed);
 
   } else {
     fprintf (stderr, "Algorithm %s is invalid! You must choose one of [BNB|Approx|LS1|LS2]. \n", optarg);
