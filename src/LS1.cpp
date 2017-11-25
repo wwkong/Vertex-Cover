@@ -22,7 +22,6 @@ bool cmpSize(vector<int> a, vector<int> b) {
 vector<int> getNextSol(vector<int> current, Graph &gra, vector<int> &params )
 {
 	vector<int> copycurrent(current);
-	
 	int index = rand() % copycurrent.size() ;
 	int vertex = copycurrent[index];
 	int result = 1;
@@ -34,7 +33,6 @@ vector<int> getNextSol(vector<int> current, Graph &gra, vector<int> &params )
 		if(it==copycurrent.end())
 		{
 			result = 0;
-			break;
 		}
 	}
 	if(result == 1){
@@ -88,33 +86,32 @@ vector<int> maxDegGreedy(Graph &gra){
 }
 
 void ESA(Graph graph, string instName, int cutoff, int seed)
-{	
+{
 	ofstream sol, trace;
 	double temp = 1;
-    double cooling = 0.95;
-    double thresh = 0.000001;
+  double cooling = 0.95;
+  double thresh = 0.000001;
 
-    srand(seed);
+  srand(seed);
 
-    stringstream fss;
-  	fss << instName << "_LS1_" << cutoff;
-  	string solFName = fss.str()+".sol";
-  	string traceFName = fss.str()+".trace";
-  	fss.str(string());
+  stringstream fss;
+  fss << instName << "_LS1_" << cutoff << "_" << seed;
+  string solFName = fss.str()+".sol";
+  string traceFName = fss.str()+".trace";
+  fss.str(string());
 
 	clock_t start = clock(); 
 	clock_t end = clock();
 	float elapsedfinal= (end - start) / (float) CLOCKS_PER_SEC;
 	long diff;
 	int iter = 20;
-	cout<<cutoff;
 	vector<int> current = maxDegGreedy(graph);
 	int currCost = current.size();
 	vector<int> nextSol;
 	trace.open(traceFName.c_str());
 	vector<int> params(2,-2);
 	while(elapsedfinal < cutoff && temp > 0)
-	{	
+	{
 		for(int i =0;i<iter;i++){
 			nextSol = getNextSol(current,graph,params);
 			if(params[1]!= -1){
@@ -124,22 +121,21 @@ void ESA(Graph graph, string instName, int cutoff, int seed)
 					currCost = params[1];
 				}
 			}
+      end = clock();
+      elapsedfinal = (end - start) / (float) CLOCKS_PER_SEC;
 			if(params[0] == 1){
-				end = clock();
-				elapsedfinal = (end - start) / (float) CLOCKS_PER_SEC;
 				trace << elapsedfinal<< ", " << current.size() << endl;
 			}
-			if(elapsedfinal > cutoff){
-				cout<<"here i am";
+			if(elapsedfinal >= cutoff){
 				break;
 			}
 		}
 
 		temp = cooling * temp;
 	}
-
 	trace.close();
 
+  sort(current.begin(), current.end());
 	sol.open(solFName.c_str());
 	sol << current.size() << endl;
 	if (current.size() > 0) {

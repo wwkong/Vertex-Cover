@@ -19,7 +19,6 @@
 #include "approx.hpp"
 #include "LS1.cpp"
 #include "branchAndBound.cpp"
-#include "ls2.hpp"
 #include "ls2.cpp"
 using namespace std;
 
