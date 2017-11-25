@@ -19,6 +19,8 @@
 #include "approx.hpp"
 #include "LS1.cpp"
 #include "branchAndBound.cpp"
+#include "ls2.hpp"
+#include "ls2.cpp"
 using namespace std;
 
 int main (int argc, char **argv) {
@@ -114,7 +116,7 @@ int main (int argc, char **argv) {
     ESA(g, instName, cutoff, seed);
 
   } else if (strcmp(algName.c_str(),"LS2") == 0) {
-    // Do something
+    local_search2(g, instName, cutoff, seed);
 
   } else {
     fprintf (stderr, "Algorithm %s is invalid! You must choose one of [BNB|Approx|LS1|LS2]. \n", optarg);
