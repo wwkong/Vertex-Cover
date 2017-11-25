@@ -188,7 +188,7 @@ int local_search2(Graph &graph, string &instName, double cutoff, int seed)
             int min_loss_vertex = C[min_loss_vertex_index];
             //cout << "min_loss_vertex: " << min_loss_vertex << endl;
             vector<int>::iterator min_loss_vertex_it = C.begin() + min_loss_vertex_index;
-            assert(min_loss_vertex_it != C.end());
+            //assert(min_loss_vertex_it != C.end());
             /* Update loss and gain */
             update_gain_loss_before_remove(graph, gain, loss, C, uncovered_edges, min_loss_vertex);
             C.erase(min_loss_vertex_it);
@@ -201,9 +201,9 @@ int local_search2(Graph &graph, string &instName, double cutoff, int seed)
         vector<int>::iterator best_vertex_it = C.begin() + best_vertex_index;
         /* Update loss and gain */
         update_gain_loss_before_remove(graph, gain, loss, C, uncovered_edges, best_vertex);
-        assert(best_vertex_it != C.end());
+        //assert(best_vertex_it != C.end());
         C.erase(best_vertex_it);
-        assert(uncovered_edges.size()>0);
+        //assert(uncovered_edges.size()>0);
 
         pair<int,int> random_uncovered_edge = uncovered_edges[rand() % uncovered_edges.size()];
         int new_vertex = gain[random_uncovered_edge.first] >= gain[random_uncovered_edge.second] ? random_uncovered_edge.first : random_uncovered_edge.second; 
