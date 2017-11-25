@@ -19,7 +19,7 @@
 using namespace std;
 
 // Utility
-bool cmpSize(vector<int> a, vector<int> b) {
+bool cmpSizeBnB(vector<int> a, vector<int> b) {
   return (a.size() < b.size()); // Larger sizes first
 }
 
@@ -292,7 +292,7 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
   // Grab candidate vertices in ascending order of connections
   vector< vector<int> > aLst = G.getAdjacencyList();
-  sort(aLst.begin()+1, aLst.end(), cmpSize);
+  sort(aLst.begin()+1, aLst.end(), cmpSizeBnB);
   for (int i=1; i<aLst.size(); i++) {
     BSol.candidates.push_back(aLst[i][0]);
   }
@@ -314,8 +314,8 @@ void branchAndBound(Graph G, string instName, double cutoff) {
 
 // // Simple tests
 // int main() {
-//   Graph g = parseGraph("../input/jazz.graph");
-//   branchAndBound(g, "jazz", 300);
+//   Graph g = parseGraph("../input/power.graph");
+//   branchAndBound(g, "power", 300);
 //   return 1;
 // }
 
