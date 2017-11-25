@@ -87,12 +87,12 @@ vector<int> maxDegGreedy(Graph &gra){
 	return output;
 }
 
-void ESA(Graph graph, string instName, double cutoff, int seed)
+void ESA(Graph graph, string instName, int cutoff, int seed)
 {	
 	ofstream sol, trace;
-	double temp = 10000.0;
-    double cooling = 0.9999;
-    double thresh = 0.0001;
+	double temp = 1;
+    double cooling = 0.95;
+    double thresh = 0.000001;
 
     srand(seed);
 
@@ -104,35 +104,40 @@ void ESA(Graph graph, string instName, double cutoff, int seed)
 
 	clock_t start = clock(); 
 	clock_t end = clock();
-	float rt = (end - start) / (float) CLOCKS_PER_SEC;
-
+	float elapsedfinal= (end - start) / (float) CLOCKS_PER_SEC;
 	long diff;
-
+	int iter = 20;
+	cout<<cutoff;
 	vector<int> current = maxDegGreedy(graph);
 	int currCost = current.size();
 	vector<int> nextSol;
 	trace.open(traceFName.c_str());
 	vector<int> params(2,-2);
-	while(temp > thresh && rt < cutoff)
-	{
-		nextSol = getNextSol(current,graph,params);
-		if(params[1]!= -1){
-			diff = params[1] - currCost;
-			if((diff<0) || (currCost > 0 && exp(-abs(diff)/temp > rand()) )){
-				current = nextSol;
-				currCost = params[1];
+	while(elapsedfinal < cutoff && temp > 0)
+	{	
+		for(int i =0;i<iter;i++){
+			nextSol = getNextSol(current,graph,params);
+			if(params[1]!= -1){
+				diff = params[1] - currCost;
+				if((diff<0) || (currCost > 0 && exp(-abs(diff)/temp ) > float(rand()) /RAND_MAX )){
+					current = nextSol;
+					currCost = params[1];
+				}
+			}
+			if(params[0] == 1){
+				end = clock();
+				elapsedfinal = (end - start) / (float) CLOCKS_PER_SEC;
+				trace << elapsedfinal<< ", " << current.size() << endl;
+			}
+			if(elapsedfinal > cutoff){
+				cout<<"here i am";
+				break;
 			}
 		}
-		temp *= cooling;
-		if(params[0] == 1){
-			end = clock();
-			float elapsed = (end - start) / (float) CLOCKS_PER_SEC;
-			trace << elapsed<< ", " << current.size() << endl;
-		}
+
+		temp = cooling * temp;
 	}
-	//end = clock();
-	//float elapsed= (end - start) / (float) CLOCKS_PER_SEC;
-	//trace << elapsed<< ", " << current.size() << endl;
+
 	trace.close();
 
 	sol.open(solFName.c_str());
@@ -145,10 +150,9 @@ void ESA(Graph graph, string instName, double cutoff, int seed)
   }
   sol.close();
 }
-
 /*int main() {
-   Graph g = parseGraph("../Data/jazz.graph");
-   ESA(g, "jaz", 2,100);
+   Graph g = parseGraph("../Data/karate.graph");
+   ESA(g, "ka", 2,1);
    cout<<"Ended";
    return 1;
  }*/
