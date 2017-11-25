@@ -17,6 +17,7 @@
 #include "parseGraph.cpp"
 #include "approx.cpp"
 #include "approx.hpp"
+#include "LS.cpp"
 #include "branchAndBound.cpp"
 using namespace std;
 
@@ -107,10 +108,10 @@ int main (int argc, char **argv) {
     branchAndBound(g, instName, cutoff);
 
   } else if (strcmp(algName.c_str(),"Approx") == 0) {
-    approx(g,instName, cutoff );
+    approx(g, instName, cutoff);
 
   } else if (strcmp(algName.c_str(),"LS1") == 0) {
-    // Do something
+    ESA(g, instName, cutoff, seed);
 
   } else if (strcmp(algName.c_str(),"LS2") == 0) {
     // Do something
