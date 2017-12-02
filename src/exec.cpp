@@ -17,7 +17,7 @@
 #include "parseGraph.cpp"
 #include "approx.cpp"
 #include "approx.hpp"
-#include "LS1.cpp"
+#include "LS.cpp"
 #include "branchAndBound.cpp"
 #include "ls2.cpp"
 using namespace std;
