@@ -85,7 +85,7 @@ void ESA(Graph graph, string instName, double cutoff, int seed)
 {
 	ofstream sol, trace;
 	stringstream fss;
-  	fss << instName << "_LS_" << cutoff;
+  	fss << instName << "_LS1_" << cutoff << "_" <<seed;
   	string solFName = fss.str()+".sol";
   	string traceFName = fss.str()+".trace";
   	fss.str(string());
