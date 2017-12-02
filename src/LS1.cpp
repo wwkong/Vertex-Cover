@@ -35,7 +35,7 @@ vector<int> getNextSol(vector<int> current, Graph &gra, vector<int> &params )
 			result = 0;
 		}
 	}
-	if(result == 1){
+	if(result == 1) {
 		std::vector<int>::iterator it1 = find(copycurrent.begin(),copycurrent.end(),vertex);
 		copycurrent.erase(it1);
 		params[1] = gra.adjacencyList[vertex].size();
@@ -124,7 +124,7 @@ void ESA(Graph graph, string instName, int cutoff, int seed)
       end = clock();
       elapsedfinal = (end - start) / (float) CLOCKS_PER_SEC;
 			if(params[0] == 1){
-				trace << elapsedfinal<< ", " << current.size() << endl;
+				trace << elapsedfinal << ", " << current.size() << endl;
 			}
 			if(elapsedfinal >= cutoff){
 				break;

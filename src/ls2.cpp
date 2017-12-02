@@ -166,7 +166,7 @@ int local_search2(Graph &graph, string &instName, double cutoff, int seed)
     string_stream << instName << "_LS2_" << cutoff << "_" << seed << ".trace";
     ofstream trace_file;
     string trace_file_name = string_stream.str();
-    trace_file.open(trace_file_name);
+    trace_file.open(trace_file_name.c_str());
     trace_file << fixed << setprecision(2) << .0 << ", "; 
     trace_file << VC.size() << endl;
 

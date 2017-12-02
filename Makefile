@@ -12,6 +12,8 @@ exec:
 	clang++ $(CARGS) -Idir ./src/exec.cpp -o ./bin/$@ $< $(INC) $(CPPLIB) -lm
 qrtd:
 	clang++ $(CARGS) -Idir ./src/qrtd.cpp -o ./bin/$@ $< $(INC) $(CPPLIB) -lm
+qrtdS:
+	clang++ $(CARGS) -Idir ./src/qrtd.cpp -o ./bin/$@ $< $(INC) $(CPPLIB) -lm -static-libgcc -static-libstdc++
 execRaw:
 	clang++ -Idir ./src/exec.cpp -o ./bin/exec
 parseGraph:
