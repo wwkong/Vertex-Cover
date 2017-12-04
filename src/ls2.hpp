@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <string>
 #include "approx.hpp"
+#include <stdint.h>
 
 int local_search2(Graph &graph, string &instName, double cutoff, int seed);
 
